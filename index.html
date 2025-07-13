@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="ManuelCyrus">
+    <!-- Link icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--  -->
+
+    <title>Codifyworld</title>
+
+    <!-- tailwindCss -->
+    <script src="https://cdn.tailwindcss.com"></script>
+   <!-- tailwindCss -->
+
+</head>
+<body>
+    
+<!-- Top bar menu -->
+
+<header id="navbar" class="fixed top-0 left-0 w-full bg-black/60 text-gray-200 z-20 backdrop-blur-md shadow-md transition duration-300">
+  <nav class="flex justify-between items-center p-4 px-8 relative">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-2xl">
+      <span class="text-2xl font-bold tracking-wider">Codify</span>
+    </div>
+
+    <!-- Menu com Ícones -->
+    <ul class="flex gap-10 text-lg relative">
+      
+      <!-- Menu Item 1 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-home"></i> Início
+        </a>
+
+        <!-- Submenu -->
+      
+        <div class="absolute left-1/2 -translate-x-1 top-full ml-7 mt-2 w-[60vw] bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible p-6">
+          <h3 class="text-2xl font-bold text-[#9e0f61]">Conhença-nos</h3>
+          <p class="text-gray-600 mt-2 text-lg">Aqui você encontra informações gerais sobre o Codifyworld.</p>
+
+
+  <!-- Listas organizadas em colunas -->
+  <div class="grid grid-cols-3 gap-4 mt-4">
+    <!-- Primeira coluna -->
+    <ul class="space-y-2">
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apresentação</a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-plus-square-o" aria-hidden="true"></i>&nbsp;Nossa História</a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-bullseye" aria-hidden="true"></i>&nbsp;Missão e Valores</a></li>
+    </ul>
+
+    <!-- Segunda coluna -->
+    <ul class="space-y-2">
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-users text-gray-600"></i>&nbsp;Equipe</a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-handshake-o" aria-hidden="true"></i>&nbsp;Parceiros</a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-tasks" aria-hidden="true"></i>&nbsp;Trabalhe Conosco</a></li>
+    </ul>
+
+    <!-- Terceira coluna -->
+    <ul class="space-y-2">
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-ticket" aria-hidden="true"></i>&nbsp;Suporte</a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"> <i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;Contato </a></li>
+      <li><a href="#" class="hover:text-[#9e0f61] transition"><i class="fa fa-question-circle-o" aria-hidden="true"></i>&nbsp;Perguntas Frequentes</a></li>
+    </ul>
+  </div>
+
+        </div>
+      </li>
+
+      <!-- Menu Item 2 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-id-card-o"></i> Assuntos Profissionais
+        </a>
+
+        <!-- Submenu -->
+        <div class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[60vw] bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible p-6">
+          <h3 class="text-2xl font-bold text-[#9e0f61]">Profissionais</h3>
+          <p class="text-gray-600 mt-2 text-lg">Veja detalhes sobre as regulamentações e diretrizes profissionais.</p>
+        </div>
+      </li>
+
+      <!-- Menu Item 3 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-user" aria-hidden="true"></i> Secretaria Administrativa
+        </a>
+
+        <!-- Submenu -->
+        <div class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[60vw] bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible p-6">
+          <h3 class="text-2xl font-bold text-[#9e0f61]">Secretaria</h3>
+          <p class="text-gray-600 mt-2 text-lg">Acompanhe informações administrativas importantes.</p>
+        </div>
+      
+</li>
+
+<li>
+
+<a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+  <i class="fa fa-info-circle"></i> Comunicação
+</a>
+</li>
+<li>
+<a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+  <i class="fa fa-phone"></i> Contactos
+</a>
+</li>
+<li>
+<a href="#" class="hover:text-white transition duration-300">
+  <i class="fa fa-user-circle text-2xl"></i>
+</a>
+</li>
+    </ul>
+
+  </nav>
+</header>
+
+
+
+  <!-- Top bar menu -->
+  
+  <!-- Hero Section -->
+  <section class="absolute inset-0 h-[89vh] bg-top bg-cover bg-no-repeat z-10" style="background-image: url('hero.webp');">
+    <div class="absolute inset-0 bg-black/50"></div> <!-- Overlay transparente -->
+  
+    <!-- Conteúdo do Hero -->
+    <div class="relative z-10 text-white p-4 max-w-xl ml-8 mt-[40vh]">
+      <h1 class="text-4xl font-bold mb-2">Bem-vindo a Codifyworld</h1>
+      <p class="text-lg">A Codify é uma plataforma inovadora dedicada à criação de soluções em software, promovendo uma comunidade ativa no Discord e conectando entusiastas de tecnologia com o mercado de software.</p>
+    </div>
+  
+    <!-- Linha Horizontal e Informações Adicionais -->
+    <hr class="border-gray-400 opacity-50 my-4 mx-8">
+    <div class="relative z-10 text-gray-300 px-8">
+      <p>Siga-nos:</p>
+      <div class="flex gap-4 mt-2">
+        <a href="#" class="hover:text-white transition"><i class="fa fa-facebook"></i></a>
+        <a href="#" class="hover:text-white transition"><i class="fa fa-twitter"></i></a>
+        <a href="#" class="hover:text-white transition"><i class="fa fa-instagram"></i></a>
+      </div>
+    </div>
+  </section>
+  <!-- Hero Section -->
+  
+      
+
+   <!-- hero finish -->
+
+
+
+<!-- about us-->
+
+
+
+  <section class="flex flex-col md:flex-row items-center gap-8 p-8 bg-white rounded-lg shadow-md" style="margin-top:510px;">
+    <!-- Texto -->
+    <div class="md:w-1/2 space-y-4 text-center md:text-left ">
+      
+      <h3 class="text-sm font-semibold text-[#9e0f61] uppercase tracking-wide flex items-center justify-center gap-4">
+        <span class="w-12 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+        Sobre a Codify
+        <span class="w-12 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+      </h3>
+      
+      
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+        CodifyWorld  tecnologia
+      </h1>
+      <p class="text-gray-700 leading-relaxed">A Codify é uma plataforma inovadora dedicada à criação de soluções em software, promovendo uma comunidade ativa no Discord e conectando entusiastas de tecnologia com o mercado de software. A missão é transformar colaboração e aprendizado em oportunidades de negócios.
+
+
+      </p>
+      <a 
+        href="#" 
+        class="inline-flex items-center px-4 py-2  bg-[#9e0f61] text-white rounded-md hover:bg-purple-700 transition-colors"
+      >
+        Ver mais 
+        <i class="fa fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+  
+    <!-- Imagem -->
+    <div class="md:w-1/2 flex justify-center relative">
+      <img 
+        src="logo.jpg" 
+        alt="Sobre a CAPFA" 
+        class="w-3/4 max-w-xs rounded-lg  -mt-6 -mr-6"
+      />
+    </div>
+  </section>
+  
+<!-- about us-->
+
+
+<!-- Cards informações -->
+<section class="p-6 bg-gray-50">
+  <h1 class="text-2xl font-bold text-center text-gray-800 mb-6 flex items-center justify-center gap-4">
+    <span class="w-16 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+    Serviços
+    <span class="w-16 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+  </h1>
+
+  <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 justify-items-center">
+    <!-- Card 1 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <a href="inscricao.html">
+        <i class="fa fa-file-text-o text-[#9e0f61] text-5xl mb-4"></i>
+        <p class="text-gray-600">Inscrições para estudantes e profissionais</p>
+      </a>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <a href="lista.html">
+        <i class="fa fa-users text-[#9e0f61] text-5xl mb-4"></i>
+        <p class="text-gray-600">Consultar membros profissionais e estagiários</p>
+      </a>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <a href="pagamento.html">
+        <i class="fa fa-credit-card text-[#9e0f61] text-5xl mb-4"></i>
+        <p class="text-gray-600">Pagamentos de quotas e outros serviços</p>
+      </a>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <a href="lista_escola.html">
+        <i class="fa fa-building-o text-[#9e0f61] text-5xl mb-4"></i>
+        <p class="text-gray-600">Instituições Associadas</p>
+      </a>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <a href="reclamacoes.html">
+        <i class="fa fa-info-circle text-[#9e0f61] text-5xl mb-4"></i>
+        <p class="text-gray-600">Reclamações</p>
+      </a>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="bg-white shadow-lg rounded-lg w-full sm:w-72 p-6 text-center transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      <i class="fa fa-graduation-cap text-[#9e0f61] text-5xl mb-4"></i>
+      <p class="text-gray-600">Formação de capacitação para profissionais</p>
+    </div>
+
+   
+  </div>
+</section>
+
+<!-- Cards informações -->
+
+
+
+
+<section 
+  class="relative bg-cover bg-center min-h-[70vh] flex items-center" 
+  style="background-image: url('hero.webp');"
+>
+ 
+  <div class="absolute inset-0 bg-black/50"></div>
+<!-- Conteúdo -->
+<div class="relative z-10 max-w-4xl mx-auto px-6 py-16 text-white">
+  <!-- Título principal -->
+  <h1 class="text-4xl md:text-5xl font-bold mb-4">
+    <span class="text-green-300">CodifyWorld -</span>e seus clientes
+  </h1>
+
+  <!-- Subtítulo / descrição -->
+  <p class="text-lg md:text-xl max-w-3xl mb-6 leading-relaxed">
+    Codify busca ser um hub de inovação no universo de software, com foco em blockchain e colaboração entre colaboradores, clientes e parceiros.
+
+  </p>
+
+  <!-- Depoimento (opcional) -->
+  <blockquote class="italic text-sm md:text-base max-w-3xl mb-8">
+    “Codify está em constante crescimento, sempre adaptando-se às necessidades da comunidade e do mercado.”
+  </blockquote>
+
+  <!-- Botão de ação -->
+  <a 
+    href="#"
+    class="inline-block px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-md shadow-md transition-colors"
+  >
+    Contacte-nos para mais informações
+  </a>
+</div>
+  
+</section>
+
+
+
+  <!-- SOBRE NÓS -->
+
+  <!-- SERVIÇOS -->
+  <!-- <section class="bg-white py-10" style="margin-top:450px ;">
+    <div class="container mx-auto px-6 text-center">
+      <h2 class="text-3xl text-purple-600 font-bold text-gray-800 mb-6 mt-6 ">Mantenha-se Conectado com a CAPFA</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+          <i class="fa fa-id-card text-blue-500 text-4xl mb-4"></i>
+          <h3 class="text-xl font-bold mb-2">Emissão de Carteiras</h3>
+          <p class="text-gray-600">Obtenha sua carteira profissional com rapidez e segurança.</p>
+        </div>
+        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+          <i class="fa fa-calendar text-green-500 text-4xl mb-4"></i>
+          <h3 class="text-xl font-bold mb-2">Agendamentos</h3>
+          <p class="text-gray-600">Marque um horário para retirada ou renovação de carteiras.</p>
+        </div>
+        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+          <i class="fa fa-search text-purple-500 text-4xl mb-4"></i>
+          <h3 class="text-xl font-bold mb-2">Consulta de Autenticidade</h3>
+          <p class="text-gray-600">Verifique a validade de carteiras profissionais.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+   -->
+
+<!-- NOTÍCIAS -->
+<section class="py-10 bg-gray-50">
+  <div class="container mx-auto px-6">
+   
+    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6 flex items-center justify-center gap-4">
+      <span class="w-16 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+      Notícias
+      <span class="w-16 h-[4px] bg-[#9e0f61] rounded-2xl"></span>
+    </h1>
+
+    <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      
+      
+      <!-- Card 1 -->
+      <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img src="hero.webp" alt="Imagem 1" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <span class="text-sm text-gray-500 block mb-2">Publicado em: 20/02/2025</span>
+          <h3 class="font-bold text-lg text-gray-800">Associação farmacêutica</h3>
+          <p class="text-gray-600 mt-2">Descrição breve sobre o conteúdo do card, para introduzir o tema...</p>
+          <a href="#" class="text-[#9e0f61] font-semibold flex items-center mt-3 hover:underline">
+            Ver mais <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img src="hero.webp" alt="Imagem 2" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <span class="text-sm text-gray-500 block mb-2">Publicado em: 18/02/2025</span>
+          <h3 class="font-bold text-lg text-gray-800">Associação farmacêutica</h3>
+          <p class="text-gray-600 mt-2">Descrição breve sobre o conteúdo do card, para introduzir o tema...</p>
+          <a href="#" class="text-[#9e0f61] font-semibold flex items-center mt-3 hover:underline">
+            Ver mais <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img src="capfa-hero.jpg" alt="Imagem 3" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <span class="text-sm text-gray-500 block mb-2">Publicado em: 15/02/2025</span>
+          <h3 class="font-bold text-lg text-gray-800">Associação farmacêutica</h3>
+          <p class="text-gray-600 mt-2">Descrição breve sobre o conteúdo do card, para introduzir o tema...</p>
+          <a href="#" class="text-[#9e0f61] font-semibold flex items-center mt-3 hover:underline">
+            Ver mais <i class="fa fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botão "Ver Mais" -->
+    <div class="mt-8 text-center">
+      <a href="noticia.html" class="inline-flex items-center bg-[#9e0f61] text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-[#7e0c4e] transition duration-300">
+        Ver Mais <i class="fa fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- DEPOIMENTOS -->
+  <!-- <section class="bg-gray-50 py-10">
+    <div class="container mx-auto text-center px-6">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Depoimentos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <p class="text-gray-600 italic">"Serviço excelente! Rápido e confiável. Recomendo para todos os farmacêuticos."</p>
+          <p class="font-bold text-gray-800 mt-4">— Manuel Fula</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <p class="text-gray-600 italic">"A consulta de autenticidade é muito prática. Adorei a experiência."</p>
+          <p class="font-bold text-gray-800 mt-4">— Manuel Fula</p>
+        </div>
+      </div>
+    </div>
+  </section>
+   -->
+
+
+ <!-- FAQ -->
+<section class="bg-white py-10">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Perguntas Frequentes</h2>
+
+    <!-- Grid para alinhar os FAQs -->
+    <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+      <details class="bg-gray-200 p-4 rounded-lg">
+        <summary class="cursor-pointer font-bold text-gray-900">Como solicitar uma carteira profissional?</summary>
+        <p class="text-gray-800 mt-2">Você pode solicitar sua carteira preenchendo o formulário online e enviando os documentos necessários.</p>
+      </details>
+      <details class="bg-gray-200 p-4 rounded-lg">
+        <summary class="cursor-pointer font-bold text-gray-900">Como solicitar uma licença?</summary>
+        <p class="text-gray-800 mt-2">Você pode solicitar sua carteira preenchendo o formulário online e enviando os documentos necessários.</p>
+      </details>
+      <details class="bg-gray-200 p-4 rounded-lg">
+        <summary class="cursor-pointer font-bold text-gray-900">Como solicitar declarações?</summary>
+        <p class="text-gray-800 mt-2">Você pode solicitar sua carteira preenchendo o formulário online e enviando os documentos necessários.</p>
+      </details>
+      <details class="bg-gray-200 p-4 rounded-lg">
+        <summary class="cursor-pointer font-bold text-gray-900">Como efectuar o pagamento de quota via On-line?</summary>
+        <p class="text-gray-800 mt-2">Você pode solicitar sua carteira preenchendo o formulário online e enviando os documentos necessários.</p>
+      </details>
+      
+    </div>
+  </div>
+</section>
+
+    
+   
+<!-- footer -->
+<footer id="footer" class="bg-gray-100 py-8">
+  <div class="container mx-auto px-6 md:px-12 lg:px-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Sobre -->
+      <div class="space-y-4">
+        <a href="index.html" class="text-xl font-bold">CodifyWorld</a>
+        <div class="text-gray-600">
+          <p>Brasil, são paulo</p>
+          <p>Rua são paulo, n 53/53</p>
+          <p class="mt-3"><strong>Contacto:</strong> +244 927 944 541 961/ +55 556 666 555</p>
+          <p><strong>Email:</strong> CodifyWorld@gmail.com</p>
+        </div>
+        <div class="flex space-x-4 mt-4">
+          <a href="" class="text-gray-600 hover:text-blue-600"><i class="fa fa-facebook"></i></a>
+          <a href="" class="text-gray-600 hover:text-pink-600"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="text-gray-600 hover:text-green-600"><i class="fa fa-whatsapp"></i></a>
+        </div>
+      </div>
+      
+      <!-- Links mais usados -->
+      <div>
+        <h4 class="font-semibold text-lg">Links mais usados</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">Lorem ipsum dolor </a></li>
+         
+          <li><a href="#" class="hover:text-blue-600">Lorem ipsum dolor </a></li>
+         
+          <li><a href="#" class="hover:text-blue-600">Lorem ipsum dolor </a></li>
+         
+          <li><a href="#" class="hover:text-blue-600">Lorem ipsum dolor </a></li>
+         
+          
+        </ul>
+      </div>
+
+     
+      
+      <!-- Nossos Serviços -->
+      <div>
+        <h4 class="font-semibold text-lg">Nossos Serviços</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">Consultoria de TI</a></li>
+          <li><a href="#" class="hover:text-blue-600">Criação de Software</a></li>
+          <li><a href="#" class="hover:text-blue-600">Formação de capacitação</a></li>
+        </ul>
+      </div>
+      
+      <!-- Parceria -->
+      <div>
+        <h4 class="font-semibold text-lg">Parceria</h4>
+        <img src="" alt="Parceria" class="w-24 rounded-full">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Copyright -->
+  <div class="text-center text-gray-600 mt-8">
+    <p>© <strong>codify</strong> Todos direitos reservados</p>
+  </div>
+</footer>
+
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="fixed bottom-5 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fa fa-arrow-up"></i></a>
+<!--/ footer -->
+
+  
+</body>
+</html>
+
+
+<script>
+  window.addEventListener("scroll", function () {
+    var header = document.getElementById("navbar");
+    if (window.scrollY > 50) {
+      header.classList.add("bg-[#9e0f61]");
+      header.classList.remove("bg-black/60");
+    } else {
+      header.classList.add("bg-black/60");
+      header.classList.remove("bg-[#9e0f61]");
+    }
+  });
+
+</script>

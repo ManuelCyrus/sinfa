@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="ManuelCyrus">
+    <!-- Link icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--  -->
+
+    <title>CAPFA-CÂMARA DOS PROFISSIONAIS FARMACÊUTICOS DE ANGOLA</title>
+
+    <!-- tailwindCss -->
+    <script src="https://cdn.tailwindcss.com"></script>
+   <!-- tailwindCss -->
+
+</head>
+<body>
+    
+<!-- Top bar menu -->
+<header id="navbar" class="fixed top-0 left-0 w-full bg-black/60 text-gray-200 z-20 backdrop-blur-md shadow-md transition duration-300">
+  <nav class="flex justify-between items-center p-4 px-8 relative">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-2xl">
+      <span class="text-2xl font-bold tracking-wider">ASSOFARMA</span>
+    </div>
+
+    <!-- Menu com Ícones -->
+    <ul class="flex gap-10 text-lg relative">
+      
+      <!-- Menu Item 1 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-home"></i> Início
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-info-circle"></i> Apresentação</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-history"></i> Nossa História</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-bullseye"></i> Missão e Valores</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-users"></i> Equipe</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-handshake-o"></i> Parceiros</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-envelope-o"></i> Contato</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 2 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-id-card-o"></i> Assuntos Profissionais
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-gavel"></i> Regulamentações</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-book"></i> Diretrizes</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 3 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-user"></i> Secretaria Administrativa
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-file"></i> Documentos</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-calendar"></i> Agenda</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 4 -->
+      <li>
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-info-circle"></i> Comunicação
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-phone"></i> Contatos
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="hover:text-white transition duration-300">
+          <i class="fa fa-user-circle text-2xl"></i>
+        </a>
+      </li>
+    </ul>
+
+  </nav>
+</header>
+
+
+<section style="margin-top: 110px;">
+  
+</section>
+
+<section class="mt-32 flex flex-col items-center shadow-lg p-4 " style="max-width: 1000px;margin: auto;">
+  <img src="logo.jpg" alt="Logo" class="w-24 h-24 mb-4">
+  <h2 class="text-[#9e0f61] text-2xl font-bold">Registros de Membros Profissionais</h2>
+  <p class="text-gray-600 mb-6">Lista de membros cadastrados na Associação</p>
+  <div class="w-full max-w-4xl overflow-x-auto">
+    <table class="w-full border-collapse border border-gray-300 shadow-lg">
+      <thead class="bg-[#9e0f61] text-white">
+        <tr>
+          <th class="px-4 py-2">N</th>
+          <th class="px-4 py-2">Nome Completo</th>
+          <th class="px-4 py-2">Instituição</th>
+          <th class="px-4 py-2">N da Carteira</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-700">
+        <tr class="border-b hover:bg-gray-100">
+          <td class="px-4 py-2 text-center">01</td>
+          <td class="px-4 py-2">António Bartolomeu</td>
+          <td class="px-4 py-2">Sacrinor</td>
+          <td class="px-4 py-2 text-center">001AFM2025</td>
+        </tr>
+        <tr class="border-b hover:bg-gray-100">
+          <td class="px-4 py-2 text-center">02</td>
+          <td class="px-4 py-2">António Bartolomeu</td>
+          <td class="px-4 py-2">Sacrinor</td>
+          <td class="px-4 py-2 text-center">001AFM2025</td>
+        </tr>
+        <tr class="border-b hover:bg-gray-100">
+          <td class="px-4 py-2 text-center">03</td>
+          <td class="px-4 py-2">António Bartolomeu</td>
+          <td class="px-4 py-2">Sacrinor</td>
+          <td class="px-4 py-2 text-center">001AFM2025</td>
+        </tr>
+        <tr class="border-b hover:bg-gray-100">
+          <td class="px-4 py-2 text-center">03</td>
+          <td class="px-4 py-2">António Bartolomeu</td>
+          <td class="px-4 py-2">Sacrinor</td>
+          <td class="px-4 py-2 text-center">001AFM2025</td>
+        </tr>
+        <tr class="border-b hover:bg-gray-100">
+          <td class="px-4 py-2 text-center">03</td>
+          <td class="px-4 py-2">António Bartolomeu</td>
+          <td class="px-4 py-2">Sacrinor</td>
+          <td class="px-4 py-2 text-center">001AFM2025</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+
+
+   
+ <!-- footer -->
+<footer id="footer" class="bg-gray-100 py-8">
+  <div class="container mx-auto px-6 md:px-12 lg:px-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Sobre -->
+      <div class="space-y-4">
+        <a href="index.html" class="text-xl font-bold">ASSOFARMA</a>
+        <div class="text-gray-600">
+          <p>Luanda Maianga </p>
+          <p>Rua kwame Nkruma, n 53/53</p>
+          <p class="mt-3"><strong>Contacto:</strong> +244 931 981 961/935 081 022</p>
+          <p><strong>Email:</strong> assofarmanacional@gmail.com</p>
+        </div>
+        <div class="flex space-x-4 mt-4">
+          <a href="https://www.facebook.com/profile.php?id=100088880805119&mibextid=LQQJ4d" class="text-gray-600 hover:text-blue-600"><i class="fa fa-facebook"></i></a>
+          <a href="https://www.instagram.com/galeneses7?igsh=MWZoZnRicGg4cnB6Yw%3D%3D&utm_source=qr" class="text-gray-600 hover:text-pink-600"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="text-gray-600 hover:text-green-600"><i class="fa fa-whatsapp"></i></a>
+        </div>
+      </div>
+      
+      <!-- Links mais usados -->
+      <div>
+        <h4 class="font-semibold text-lg">Links mais usados</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">OFA-Ordem dos farmacêuticos de Angola</a></li>
+         
+          <li><a href="#" class="hover:text-blue-600">OFCV-Ordem dos farmacêuticos do Cabo Verde</a></li>
+          <li><a href="#" class="hover:text-blue-600">Galêneses</a></li>
+        </ul>
+      </div>
+      
+      <!-- Nossos Serviços -->
+      <div>
+        <h4 class="font-semibold text-lg">Nossos Serviços</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">Renovação de carteiras</a></li>
+          <li><a href="#" class="hover:text-blue-600">Pagamentos de quotas</a></li>
+          <li><a href="#" class="hover:text-blue-600">Formação de capacitação</a></li>
+        </ul>
+      </div>
+      
+      <!-- Parceria -->
+      <div>
+        <h4 class="font-semibold text-lg">Parceria</h4>
+        <img src="logo.jpg" alt="Parceria" class="w-24 rounded-full">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Copyright -->
+  <div class="text-center text-gray-600 mt-8">
+    <p>© <strong>assofarma</strong> Todos direitos reservados</p>
+  </div>
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="fixed bottom-5 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fa fa-arrow-up"></i></a>
+<!--/ footer -->
+
+</body>
+</html>
+
+
+<script>
+
+function nextStep(step) {
+    document.querySelectorAll('.step').forEach(el => el.classList.add('hidden'));
+    document.getElementById('step' + step).classList.remove('hidden');
+  }
+  function prevStep(step) {
+    document.querySelectorAll('.step').forEach(el => el.classList.add('hidden'));
+    document.getElementById('step' + step).classList.remove('hidden');
+  }
+
+  window.addEventListener("scroll", function () {
+    var header = document.getElementById("navbar");
+    if (window.scrollY > 50) {
+      header.classList.add("bg-[#9e0f61]");
+      header.classList.remove("bg-black/60");
+    } else {
+      header.classList.add("bg-black/60");
+      header.classList.remove("bg-[#9e0f61]");
+    }
+  });
+
+
+  function showSection(sectionId) {
+    // Oculta todas as seções
+    document.querySelectorAll(".content-section").forEach(section => {
+      section.classList.add("hidden");
+    });
+
+    // Exibe a seção escolhida
+    document.getElementById(sectionId).classList.remove("hidden");
+  }
+</script>

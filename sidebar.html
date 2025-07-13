@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar com Topbar</title>
+     <!-- Link icone -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     <!--  -->
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("-translate-x-full");
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white">
+    <!-- Topbar -->
+    <div class="bg-white text-black p-4 flex items-center justify-between border-b border-gray-300">
+        <div class="flex items-center">
+            <button onclick="toggleSidebar()" class="text-black focus:outline-none lg:hidden">
+                <i class="fa fa-bars w-6 h-6"></i>
+            </button>
+            <h1 class="ml-4 text-xl font-bold">Sistema</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <input type="text" placeholder="Buscar..." class="p-2 rounded-lg border border-gray-300 focus:outline-none" />
+            <img src="https://via.placeholder.com/40" alt="User" class="w-10 h-10 rounded-full" />
+        </div>
+    </div>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white text-black border-r border-gray-300 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0">
+            <div class="p-5 flex flex-col items-center border-b border-gray-300">
+                <p class="text-lg font-semibold">Usuário</p>
+            </div>
+            <ul class="mt-4 space-y-2">
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-home w-5 h-5"></i>
+                    <span>Início</span>
+                </li>
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-user-plus w-5 h-5"></i>
+                    <span>Cadastramento</span>
+                </li>
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-file-alt w-5 h-5"></i>
+                    <span>Emissão 1ª vez</span>
+                </li>
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-sync w-5 h-5"></i>
+                    <span>Atualização Solicitação</span>
+                </li>
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-money-bill w-5 h-5"></i>
+                    <span>Tesouraria</span>
+                </li>
+                <li class="px-6 py-3 hover:bg-gray-200 cursor-pointer flex items-center space-x-3">
+                    <i class="fa fa-user-shield w-5 h-5"></i>
+                    <span>Administração</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 p-6">Conteúdo aqui...</div>
+    </div>
+</body>
+</html>

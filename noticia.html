@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Web tutorials">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="ManuelCyrus">
+    <!-- Link icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--  -->
+
+    <title>AssofarmaInfo</title>
+
+    <!-- tailwindCss -->
+    <script src="https://cdn.tailwindcss.com"></script>
+   <!-- tailwindCss -->
+
+</head>
+<body>
+  
+
+<!-- Top bar menu -->
+
+<header id="navbar" class="fixed top-0 left-0 w-full bg-black/60 text-gray-200 z-20 backdrop-blur-md shadow-md transition duration-300">
+  <nav class="flex justify-between items-center p-4 px-8 relative">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <img src="logo.jpg" alt="Logo" class="w-10 h-10 rounded-2xl">
+      <span class="text-2xl font-bold tracking-wider">ASSOFARMA</span>
+    </div>
+
+    <!-- Menu com Ícones -->
+    <ul class="flex gap-10 text-lg relative">
+      
+      <!-- Menu Item 1 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-home"></i> Início
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-info-circle"></i> Apresentação</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-history"></i> Nossa História</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-bullseye"></i> Missão e Valores</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-users"></i> Equipe</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-handshake-o"></i> Parceiros</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-envelope-o"></i> Contato</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 2 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-id-card-o"></i> Assuntos Profissionais
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-gavel"></i> Regulamentações</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-book"></i> Diretrizes</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 3 -->
+      <li class="relative group">
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-user"></i> Secretaria Administrativa
+        </a>
+
+        <!-- Submenu compacto -->
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white text-gray-800 shadow-lg rounded-lg opacity-0 scale-95 transform transition-all duration-300 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible">
+          <ul class="p-2 space-y-2">
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-file"></i> Documentos</a></li>
+            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100"><i class="fa fa-calendar"></i> Agenda</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Menu Item 4 -->
+      <li>
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-info-circle"></i> Comunicação
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center gap-2 hover:text-white transition duration-300">
+          <i class="fa fa-phone"></i> Contatos
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="hover:text-white transition duration-300">
+          <i class="fa fa-user-circle text-2xl"></i>
+        </a>
+      </li>
+    </ul>
+
+  </nav>
+</header>
+
+
+  <!-- Top bar menu -->
+  
+
+
+<!-- Menu  -->
+  <header class="bg-white  border-b-2 border-red-600   px-5 flex justify-between" style="margin-top:120px;">
+
+<div class="flex gap-10">
+<a href="" class=" p-2 text-xl rounded rounded-sm"><i class="fa fa-bars" aria-hidden="true"></i></a>
+
+<!-- <h1 class="text-red-500 text-3xl font-black font-sans"> A BOLA</h1> -->
+<h1 class="font-bold text-4xl">Assofarma<span class="text-orange-500">News</span></h1>
+</div>
+
+<div class="flex gap-5 items-center ">
+
+  <a href="" class="p-1  text-3xl"><a href="" class="p-1 text-3xl"><i class="fa fa-search text-gray-400" aria-hidden="true"></i></a</a>
+<a href="" class="bg-red-600 text-white rounded   p-1 px-2 hidden sm:block"><i class="fa fa-play" aria-hidden="true"></i> &nbsp;Vídeos</a>
+<a href="" class="p-2 text-3xl"><i class="fa fa-globe text-gray-400" aria-hidden="true"></i></a>
+
+
+</div>
+
+
+  </header>
+<!-- /Menu  -->
+
+
+<!-- conteudo da página  -->
+  <main class="mt-5 p-4" >
+
+    <h1 class="font-bold font-sans text-3xl border-b-2 border-gray-200 ml-4">Informações recentes</h1>
+
+
+<div class="mt-5">
+
+  <div class="relative border border-gray-300 h-64 mb-5 ">
+    <h1 class="absolute text-gray-200 font-bold bottom-0 mb-10 mx-4"><span class="bg-red-500 p-1">Evento da comissão </span> &nbsp;06:45</h1>
+
+    <h1 class="absolute text-gray-200 font-bold bottom-0 mb-3 mx-4 font-mono ">Só tem novidades para essa semana</h1>
+
+  
+<img src="capfa-hero2.jpg" alt="" class="h-full w-full ">
+
+
+  </div>
+  
+
+<section class=" my-3  space-x-2   p-4  gap-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3  ">
+
+
+  <!--Capa -->
+<article class=" max-w-100 sm:max-w-80 rounded-md overflow-hidden ">
+<div class="h-56">
+<img src="hero.webp" alt="" class="w-full h-full">
+</div>
+
+<div >
+
+<h1 class="mt-2"> <span class="bg-red-500 p-1 text-gray-500 text-white">Novidades</span> &nbsp; <span class="text-red-500">30.12.2025</span> &nbsp; 06:45</h1>
+
+</div>
+
+<h1 class="font-medium  text-xl mt-2 text-gray-600">Capfa realiza inspeções nas...</h1>
+
+</article>
+<!--/Capa -->
+  <!--Capa -->
+<article class=" max-w-100 sm:max-w-80 rounded-md overflow-hidden ">
+<div class="h-56">
+<img src="hero.webp" alt="" class="w-full h-full">
+</div>
+
+<div >
+
+<h1 class="mt-2"> <span class="bg-red-500 p-1 text-gray-500 text-white">Novidades</span> &nbsp; <span class="text-red-500">30.12.2025</span> &nbsp; 06:45</h1>
+
+</div>
+
+<h1 class="font-medium  text-xl mt-2 text-gray-600">Capfa realiza inspeções nas...</h1>
+
+</article>
+<!--/Capa -->
+  <!--Capa -->
+<article class=" max-w-100 sm:max-w-80 rounded-md overflow-hidden ">
+<div class="h-56">
+<img src="hero.webp" alt="" class="w-full h-full">
+</div>
+
+<div >
+
+<h1 class="mt-2"> <span class="bg-red-500 p-1 text-gray-500 text-white">Novidades</span> &nbsp; <span class="text-red-500">30.12.2025</span> &nbsp; 06:45</h1>
+
+</div>
+
+<h1 class="font-medium  text-xl mt-2 text-gray-600">Capfa realiza inspeções nas...</h1>
+
+</article>
+<!--/Capa -->
+  <!--Capa -->
+<article class=" max-w-100 sm:max-w-80 rounded-md overflow-hidden ">
+<div class="h-56">
+<img src="hero.webp" alt="" class="w-full h-full">
+</div>
+
+<div >
+
+<h1 class="mt-2"> <span class="bg-red-500 p-1 text-gray-500 text-white">Novidades</span> &nbsp; <span class="text-red-500">30.12.2025</span> &nbsp; 06:45</h1>
+
+</div>
+
+<h1 class="font-medium  text-xl mt-2 text-gray-600">Capfa realiza inspeções nas...</h1>
+
+</article>
+<!--/Capa -->
+
+
+</section>
+
+<!-- Destaques e temas importantes na farmácia -->
+
+<section class="border-t border-gray-200 px-4">
+
+  <h1 class="font-bold text-xl mt-5"> Destaques da área farmacêutica </h1>
+  <div class="flex flex-col sm:grid grid-cols-2 lg:grid-cols-4 justify-around">
+
+    <!-- Tema -->
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/regulamentacao.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Tema</h1>
+        <h2 class="font-bold">Regulamentações</h2>
+      </div>
+    </div>
+    <!-- /Tema -->
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/pesquisa.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Tema</h1>
+        <h2 class="font-bold">Pesquisa e Inovação</h2>
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/farmacia-clinica.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Tema</h1>
+        <h2 class="font-bold">Farmácia Clínica</h2>
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/educacao.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Tema</h1>
+        <h2 class="font-bold">Educação Continuada</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Artigos relevantes -->
+  <h1 class="mt-5 border-t-2"></h1>
+  <h1 class="font-bold text-xl mt-5"> Artigos mais lidos </h1>
+  <div class="flex flex-col sm:grid grid-cols-2 lg:grid-cols-4 justify-around">
+
+    <!-- Artigo -->
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/atencao-farmaceutica.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Artigo</h1>
+        <h2 class="font-bold">A importância da atenção farmacêutica</h2>
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/bioequivalencia.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Artigo</h1>
+        <h2 class="font-bold">Bioequivalência e eficácia dos medicamentos</h2>
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/boas-praticas.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Artigo</h1>
+        <h2 class="font-bold">Boas práticas na farmácia hospitalar</h2>
+      </div>
+    </div>
+
+    <div class="border border-gray-200 rounded p-4 m-4 shadow-lg flex items-center space-x-2">
+      <img src="./image/novas-terapias.png" alt="" class="w-14 mr-2">
+      <div>
+        <h1 class="text-gray-300 font-bold">Artigo</h1>
+        <h2 class="font-bold">Novas terapias farmacológicas</h2>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+
+</section>
+
+<!-- /competicion and teams -->
+
+</main>
+<!-- /all content of page -->
+
+<!-- footer -->
+<footer id="footer" class="bg-gray-100 py-8">
+  <div class="container mx-auto px-6 md:px-12 lg:px-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Sobre -->
+      <div class="space-y-4">
+        <a href="index.html" class="text-xl font-bold">ASSOFARMA</a>
+        <div class="text-gray-600">
+          <p>Luanda Maianga </p>
+          <p>Rua kwame Nkruma, n 53/53</p>
+          <p class="mt-3"><strong>Contacto:</strong> +244 931 981 961/935 081 022</p>
+          <p><strong>Email:</strong> assofarmanacional@gmail.com</p>
+        </div>
+        <div class="flex space-x-4 mt-4">
+          <a href="https://www.facebook.com/profile.php?id=100088880805119&mibextid=LQQJ4d" class="text-gray-600 hover:text-blue-600"><i class="fa fa-facebook"></i></a>
+          <a href="https://www.instagram.com/galeneses7?igsh=MWZoZnRicGg4cnB6Yw%3D%3D&utm_source=qr" class="text-gray-600 hover:text-pink-600"><i class="fa fa-instagram"></i></a>
+          <a href="#" class="text-gray-600 hover:text-green-600"><i class="fa fa-whatsapp"></i></a>
+        </div>
+      </div>
+      
+      <!-- Links mais usados -->
+      <div>
+        <h4 class="font-semibold text-lg">Links mais usados</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">OFA-Ordem dos farmacêuticos de Angola</a></li>
+         
+          <li><a href="#" class="hover:text-blue-600">OFCV-Ordem dos farmacêuticos do Cabo Verde</a></li>
+          <li><a href="#" class="hover:text-blue-600">Galêneses</a></li>
+        </ul>
+      </div>
+      
+      <!-- Nossos Serviços -->
+      <div>
+        <h4 class="font-semibold text-lg">Nossos Serviços</h4>
+        <ul class="text-gray-600 space-y-2">
+          <li><a href="#" class="hover:text-blue-600">Renovação de carteiras</a></li>
+          <li><a href="#" class="hover:text-blue-600">Pagamentos de quotas</a></li>
+          <li><a href="#" class="hover:text-blue-600">Formação de capacitação</a></li>
+        </ul>
+      </div>
+      
+      <!-- Parceria -->
+      <div>
+        <h4 class="font-semibold text-lg">Parceria</h4>
+        <img src="logo.jpg" alt="Parceria" class="w-24 rounded-full">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Copyright -->
+  <div class="text-center text-gray-600 mt-8">
+    <p>© <strong>assofarma</strong> Todos direitos reservados</p>
+  </div>
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="fixed bottom-5 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"><i class="fa fa-arrow-up"></i></a>
+<!--/ footer -->
+
+</body>
+</html>
