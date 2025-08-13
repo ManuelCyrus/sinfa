@@ -1,527 +1,69 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>POS Farmácia — Modern</title>
-
-  <!-- Tailwind (CDN) -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Linktree com Música</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-
-  <style>
-    /* micro animação quando adiciona item */
-    .added-flash { animation: flash 0.45s ease; }
-    @keyframes flash {
-      from { box-shadow: 0 0 0 3px rgba(59,130,246,0.18); }
-      to { box-shadow: none; }
-    }
-    /* largura do conteúdo com sidebar collapsed */
-    .sidebar-collapsed .sidebar { width: 72px; }
-    .sidebar-collapsed .sidebar .menu-label { display: none; }
-    .sidebar-collapsed .sidebar .menu-item { justify-content: center; }
-    /* transição suave */
-    .sidebar { transition: width .25s ease; }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans text-gray-800 antialiased min-h-screen flex flex-col">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-  <!-- TOP BAR -->
-  <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
-    <div class="flex items-center gap-3">
-      <button id="toggleSidebar" aria-label="Toggle sidebar"
-              class="p-2 rounded-md hover:bg-gray-100 focus:outline-none">
-        <i class="fas fa-bars text-gray-600 text-lg"></i>
-      </button>
+  <div class="w-full max-w-sm bg-white shadow-lg rounded-2xl p-6 text-center">
+    <!-- Avatar ou Logo -->
+    <img src="https://via.placeholder.com/100" alt="Logo" class="w-24 h-24 mx-auto rounded-full border-4 border-gray-200">
+    <h1 class="mt-4 text-2xl font-bold text-gray-800">Meu Linktree</h1>
+    <p class="text-gray-500">Escolha uma opção</p>
 
-      <div class="flex items-center gap-3">
-        <i class="fas fa-store text-2xl text-blue-600"></i>
-        <div class="leading-tight">
-          <div class="text-lg font-bold text-gray-800">SINFAGEX</div>
-          <div class="text-xs text-gray-500">Caixa rápido · Versão demo</div>
-        </div>
-      </div>
+    <!-- Player de Música -->
+    <div class="mt-6">
+      <p class="text-gray-600 mb-2"><i class="fas fa-music"></i> Música para relaxar</p>
+      <audio controls class="w-full rounded-lg">
+        <source src="ariana.mp3" type="audio/mpeg">
+        O seu navegador não suporta o player de áudio.
+      </audio>
     </div>
 
-    <!-- Top right: shortcuts, notifications, user -->
-    <div class="flex items-center gap-4">
-      <div class="hidden md:flex items-center gap-3">
-        <button id="btnShortcuts" class="text-gray-600 hover:text-blue-600 p-2 rounded-md" title="Atalhos">
-          <i class="fas fa-keyboard"></i>
-        </button>
-        <button id="btnNotifications" class="text-gray-600 hover:text-blue-600 p-2 rounded-md relative">
-          <i class="fas fa-bell"></i>
-          <span id="notifBadge" class="absolute -top-1 -right-1 text-xs bg-red-500 text-white rounded-full px-1">2</span>
-        </button>
-      </div>
+    <!-- Links -->
+    <div class="mt-6 space-y-3">
+      <a href="./caixa.html" class="flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-home"></i> Home
+      </a>
 
-      <!-- User dropdown -->
-      <div class="relative">
-        <button id="userBtn" class="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-50 focus:outline-none">
-          <i class="fas fa-user-circle text-2xl text-gray-600"></i>
-          <div class="hidden sm:block text-left">
-            <div class="text-sm font-medium text-gray-800">Manuel Fulama</div>
-            <div class="text-xs text-gray-500">Operador: #01</div>
-          </div>
-          <i class="fas fa-chevron-down text-gray-400 hidden sm:block"></i>
-        </button>
+      <a href="./comparacao.html" class="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cash-register"></i> Caixa
+      </a>
 
-        <div id="userMenu" class="hidden absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow z-50 overflow-hidden">
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-user mr-2 text-gray-400"></i> Perfil</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-cog mr-2 text-gray-400"></i> Definições</a>
-          <div class="border-t"></div>
-          <a id="logoutBtn" href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
-        </div>
-      </div>
-    </div>
-  </header>
+      <a href="./dasboard.html" class="flex items-center justify-center gap-3 bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-credit-card"></i> POS
+      </a>
 
-  <!-- MAIN AREA: sidebar + content -->
-  <div id="app" class="flex flex-1 overflow-hidden">
-    <!-- SIDEBAR -->
-    <nav class="sidebar bg-white border-r border-gray-200 w-64 p-4 overflow-y-auto h-[calc(100vh-112px)]">
-      <div class="mb-4">
-        <div class="text-xs text-gray-400 uppercase mb-2 font-semibold">Menu</div>
-
-        <ul class="space-y-1">
-          <li class="menu-item flex items-center gap-3 p-2 rounded-md hover:bg-blue-50 cursor-pointer">
-            <i class="fas fa-home text-gray-500 w-6 text-center"></i>
-            <span class="menu-label text-gray-700">Dashboard</span>
-          </li>
-
-          <li class="menu-item flex items-center gap-3 p-2 rounded-md hover:bg-blue-50 cursor-pointer">
-            <i class="fas fa-cart-plus text-gray-500 w-6 text-center"></i>
-            <span class="menu-label text-gray-700">Vendas</span>
-          </li>
-
-          <li class="menu-item flex items-center gap-3 p-2 rounded-md hover:bg-blue-50 cursor-pointer">
-            <i class="fas fa-boxes text-gray-500 w-6 text-center"></i>
-            <span class="menu-label text-gray-700">Estoque</span>
-          </li>
-
-          <li class="menu-item flex items-center gap-3 p-2 rounded-md hover:bg-blue-50 cursor-pointer">
-            <i class="fas fa-file-invoice-dollar text-gray-500 w-6 text-center"></i>
-            <span class="menu-label text-gray-700">Financeiro</span>
-          </li>
-
-          <li class="menu-item flex items-center gap-3 p-2 rounded-md hover:bg-blue-50 cursor-pointer">
-            <i class="fas fa-users text-gray-500 w-6 text-center"></i>
-            <span class="menu-label text-gray-700">Clientes</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="mt-6">
-        <div class="text-xs text-gray-400 uppercase mb-2 font-semibold">Atalhos</div>
-        <div class="grid grid-cols-2 gap-2">
-          <button class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded" id="quickAddBtn"><i class="fas fa-plus"></i> Novo</button>
-          <button class="flex items-center gap-2 bg-gray-50 text-gray-700 px-3 py-2 rounded" id="quickReportBtn"><i class="fas fa-chart-line"></i> Relat.</button>
-          <button class="flex items-center gap-2 bg-gray-50 text-gray-700 px-3 py-2 rounded" id="quickClientsBtn"><i class="fas fa-user-plus"></i> Cliente</button>
-          <button class="flex items-center gap-2 bg-gray-50 text-gray-700 px-3 py-2 rounded" id="quickStockBtn"><i class="fas fa-box"></i> Receb.</button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- CONTENT -->
-    <main class="flex-1 overflow-auto p-6">
-      <!-- Quick stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
-          <div>
-            <div class="text-xs text-gray-400">Vendas Hoje</div>
-            <div id="statSales" class="text-2xl font-bold">R$ 0,00</div>
-          </div>
-          <i class="fas fa-dollar-sign text-2xl text-green-600"></i>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
-          <div>
-            <div class="text-xs text-gray-400">Itens no Carrinho</div>
-            <div id="statItems" class="text-2xl font-bold">0</div>
-          </div>
-          <i class="fas fa-shopping-cart text-2xl text-blue-600"></i>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg shadow-sm flex items-center justify-between">
-          <div>
-            <div class="text-xs text-gray-400">Nº Vendas Abertas</div>
-            <div id="statOpen" class="text-2xl font-bold">0</div>
-          </div>
-          <i class="fas fa-receipt text-2xl text-indigo-600"></i>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- LEFT: Cliente + Busca + Catalogo -->
-        <section class="lg:col-span-2 space-y-4">
-          <div class="bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex gap-4 items-start">
-              <div class="flex-1">
-                <label class="text-sm text-gray-600">Cliente</label>
-                <div class="mt-2 flex gap-2">
-                  <input id="customerName" placeholder="Nome do cliente (F2)" class="flex-1 border rounded px-3 py-2 focus:ring-1 focus:ring-blue-500"/>
-                  <input id="customerPhone" placeholder="Telefone" class="w-40 border rounded px-3 py-2"/>
-                  <button id="findCustomer" class="bg-gray-50 px-3 py-2 rounded hover:bg-gray-100"><i class="fas fa-search text-gray-600"></i></button>
-                </div>
-                <div class="mt-2 text-xs text-gray-500">NIF/CNPJ: <span id="customerTax">—</span></div>
-              </div>
-
-              <div class="w-48">
-                <div class="text-sm text-gray-600">Status Caixa</div>
-                <div class="mt-2 bg-gray-50 p-3 rounded">
-                  <div class="text-sm text-gray-500">Caixa: <strong>001</strong></div>
-                  <div class="text-sm text-gray-500">Operador: <strong>Manuel</strong></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Search + filter -->
-          <div class="bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex gap-3 items-center">
-              <input id="searchInput" placeholder="🔍 Pesquisar produto por nome ou código (Enter para escanear)" class="flex-1 border rounded px-3 py-2"/>
-              <select id="catFilter" class="border rounded px-3 py-2">
-                <option value="">Todas</option>
-                <option>Medicamentos</option>
-                <option>Higiene</option>
-                <option>Vitaminas</option>
-              </select>
-              <button id="clearSearch" class="bg-gray-50 px-3 py-2 rounded hover:bg-gray-100">Limpar</button>
-            </div>
-
-            <div id="productCatalog" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[46vh] overflow-auto pr-2">
-              <!-- cards via JS -->
-            </div>
-          </div>
-        </section>
-
-        <!-- RIGHT: Carrinho summary -->
-        <aside class="space-y-4">
-          <div class="bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex items-center justify-between mb-2">
-              <div class="text-lg font-semibold">Carrinho</div>
-              <div class="text-xs text-gray-500">Teclas: <span class="font-medium">F3</span> fechar</div>
-            </div>
-
-            <div class="max-h-[46vh] overflow-auto -mx-4 px-4">
-              <table class="w-full text-sm">
-                <thead class="text-xs text-gray-500 border-b">
-                  <tr>
-                    <th class="text-left py-2">Produto</th>
-                    <th class="text-center py-2">Qtd</th>
-                    <th class="text-right py-2">Total</th>
-                    <th class="text-right py-2">Ação</th>
-                  </tr>
-                </thead>
-                <tbody id="saleItems" class="divide-y"></tbody>
-              </table>
-            </div>
-
-            <div class="mt-3 border-t pt-3">
-              <div class="flex justify-between text-gray-600">
-                <div>SubTotal</div>
-                <div id="subTotal">R$ 0,00</div>
-              </div>
-              <div class="flex justify-between text-gray-600 mt-1">
-                <div>Desconto</div>
-                <div id="discountDisplay">R$ 0,00</div>
-              </div>
-              <div class="flex justify-between items-center mt-3">
-                <input id="discountInput" type="number" min="0" max="100" value="0" class="w-24 border rounded px-2 py-1"/>
-                <div class="text-right">
-                  <div class="text-xs text-gray-500">Total</div>
-                  <div id="totalDisplay" class="text-2xl font-bold text-green-600">R$ 0,00</div>
-                </div>
-              </div>
-
-              <div class="mt-4 grid grid-cols-1 gap-2">
-                <select id="paymentMethod" class="border rounded px-3 py-2">
-                  <option>Dinheiro</option>
-                  <option>TPA</option>
-                  <option>Transferência</option>
-                </select>
-                <button id="finalizeBtn" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Finalizar (F9)</button>
-                <button id="previewInvoiceBtn" class="w-full bg-indigo-500 text-white py-2 rounded hover:bg-indigo-600">Pré-visualizar</button>
-                <button id="cancelBtn" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Cancelar</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- quick actions -->
-          <div class="bg-white p-3 rounded-lg shadow-sm">
-            <div class="text-sm text-gray-600 mb-2">Ações rápidas</div>
-            <div class="grid grid-cols-2 gap-2">
-              <button id="btnPrint" class="px-3 py-2 border rounded text-sm hover:bg-gray-50"><i class="fas fa-print mr-2"></i> Imprimir</button>
-              <button id="btnSave" class="px-3 py-2 border rounded text-sm hover:bg-gray-50"><i class="fas fa-save mr-2"></i> Salvar</button>
-              <button id="btnCustomerModal" class="px-3 py-2 border rounded text-sm hover:bg-gray-50"><i class="fas fa-user-plus mr-2"></i> Novo cliente</button>
-              <button id="btnOpenDrawer" class="px-3 py-2 border rounded text-sm hover:bg-gray-50"><i class="fas fa-cash-register mr-2"></i> Abrir caixa</button>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </main>
-  </div>
-
-  <!-- FOOTER FIXO -->
-  <footer class="bg-white border-t p-3 text-sm text-gray-500 fixed bottom-0 left-0 right-0 flex items-center justify-between px-6">
-    <div>© 2025 PDV Farmácia</div>
-    <div id="footerDate" class="text-xs"></div>
-  </footer>
-
-  <!-- Modal: Invoice preview -->
-  <div id="invoicePreviewModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg w-full max-w-2xl overflow-auto">
-      <div class="p-4 border-b flex justify-between items-center">
-        <h3 class="font-semibold">Pré-visualização da Fatura</h3>
-        <div class="flex gap-2">
-          <button id="printPreview" class="px-3 py-1 bg-gray-100 rounded">Imprimir</button>
-          <button id="closePreview" class="px-3 py-1 bg-red-50 text-red-600 rounded">Fechar</button>
-        </div>
-      </div>
-      <div id="invoicePreviewContent" class="p-4 text-sm"></div>
+      <a href="./def.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./index.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./login.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition"target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./medicamentos.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./relatorio.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./stock.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./venda.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
+      <a href="./world.html" class="flex items-center justify-center gap-3 bg-gray-700 hover:bg-gray-800 text-white py-3 rounded-lg transition" target="_blank">
+        <i class="fas fa-cog"></i> Definições
+      </a>
     </div>
   </div>
 
-  <!-- CALCULADORA FLUTUANTE -->
-  <button id="toggleCalc" class="fixed bottom-20 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg z-40" title="Calculadora">
-    <i class="fas fa-calculator"></i>
-  </button>
-  <div id="calculator" class="hidden fixed bottom-28 right-6 w-72 bg-white rounded-lg shadow-lg p-3 z-40">
-    <input id="calcDisplay" readonly class="w-full border rounded px-2 py-1 mb-2 text-right" />
-    <div class="grid grid-cols-4 gap-2 text-sm">
-      <button class="py-2 border rounded" onclick="calcAppend('7')">7</button>
-      <button class="py-2 border rounded" onclick="calcAppend('8')">8</button>
-      <button class="py-2 border rounded" onclick="calcAppend('9')">9</button>
-      <button class="py-2 border rounded" onclick="calcAppend('/')">÷</button>
-
-      <button class="py-2 border rounded" onclick="calcAppend('4')">4</button>
-      <button class="py-2 border rounded" onclick="calcAppend('5')">5</button>
-      <button class="py-2 border rounded" onclick="calcAppend('6')">6</button>
-      <button class="py-2 border rounded" onclick="calcAppend('*')">×</button>
-
-      <button class="py-2 border rounded" onclick="calcAppend('1')">1</button>
-      <button class="py-2 border rounded" onclick="calcAppend('2')">2</button>
-      <button class="py-2 border rounded" onclick="calcAppend('3')">3</button>
-      <button class="py-2 border rounded" onclick="calcAppend('-')">−</button>
-
-      <button class="py-2 border rounded col-span-1" onclick="calcAppend('0')">0</button>
-      <button class="py-2 border rounded" onclick="calcAppend('.')">.</button>
-      <button class="py-2 border rounded" onclick="calcResult()">=</button>
-      <button class="py-2 border rounded" onclick="calcAppend('+')">+</button>
-
-      <button class="py-2 border rounded col-span-2 bg-red-50 text-red-600" onclick="calcClear()">C</button>
-      <button class="py-2 border rounded col-span-2" onclick="toggleCalculator()">Fechar</button>
-    </div>
-  </div>
-
-  <!-- SCRIPTS: lógica do POS -->
-  <script>
-    /* ---------- UI: sidebar collapse + user menu ---------- */
-    const appEl = document.getElementById('app');
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
-    const userBtn = document.getElementById('userBtn');
-    const userMenu = document.getElementById('userMenu');
-
-    let sidebarCollapsed = false;
-    toggleSidebarBtn.addEventListener('click', () => {
-      sidebarCollapsed = !sidebarCollapsed;
-      document.body.classList.toggle('sidebar-collapsed', sidebarCollapsed);
-    });
-
-    // user menu toggle
-    userBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      userMenu.classList.toggle('hidden');
-    });
-    document.addEventListener('click', (e) => {
-      if (!userMenu.contains(e.target) && !userBtn.contains(e.target)) userMenu.classList.add('hidden');
-    });
-
-  
-    /* ---------- sample products and cart ---------- */
-    const products = [
-      { id: '001', name: 'Dipirona 500mg', price: 10.00, stock: 12, img: '160524-800-450.jpeg' },
-      { id: '002', name: 'Paracetamol 500mg', price: 12.00, stock: 4, img: '160524-800-450.jpeg' },
-      { id: '003', name: 'Ibuprofeno 200mg', price: 15.00, stock: 20, img: '160524-800-450.jpeg' },
-      { id: '004', name: 'Vitamina C 500mg', price: 8.00, stock: 2, img: '160524-800-450.jpeg' },
-      { id: '005', name: 'Omeprazol 20mg', price: 14.00, stock: 6, img: '160524-800-450.jpeg' },
-      { id: '006', name: 'Losartana 50mg', price: 20.00, stock: 10, img: '160524-800-450.jpeg' },
-      { id: '007', name: 'Cetirizina 10mg', price: 16.00, stock: 7, img: '160524-800-450.jpeg' },
-      { id: '008', name: 'Antigripal', price: 18.00, stock: 0, img: '160524-800-450.jpeg' },
-    ];
-
-    let cart = [];
-
-    // render catalog
-    const catalogEl = document.getElementById('productCatalog');
-    function renderCatalog(filter = '') {
-      catalogEl.innerHTML = '';
-      const term = filter.trim().toLowerCase();
-      const filtered = products.filter(p => !term || p.name.toLowerCase().includes(term) || p.id.includes(term));
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded shadow p-3 cursor-pointer hover:shadow-md transition flex flex-col items-center text-center';
-        card.innerHTML = `
-          <img src="${p.img}" alt="${p.name}" class="w-20 h-20 object-cover rounded mb-2"/>
-          <div class="text-sm font-medium text-gray-700">${p.name}</div>
-          <div class="text-sm text-gray-500">Código: ${p.id}</div>
-          <div class="mt-2 font-semibold text-green-600">R$ ${p.price.toFixed(2)}</div>
-          <div class="text-xs mt-1 ${p.stock===0 ? 'text-red-500':'text-gray-500'}">${p.stock} em estoque</div>
-        `;
-        card.onclick = () => {
-          if (p.stock === 0) { alert('Sem stock'); return; }
-          addToCart(p);
-          card.classList.add('added-flash');
-          setTimeout(()=>card.classList.remove('added-flash'),450);
-        };
-        catalogEl.appendChild(card);
-      });
-    }
-
-    // cart functions
-    function addToCart(product) {
-      const existing = cart.find(i => i.id === product.id);
-      if (existing) {
-        if (existing.qty < product.stock) existing.qty++;
-        else alert('Limite de stock atingido');
-      } else {
-        cart.push({...product, qty: 1});
-      }
-      renderCart();
-    }
-    function removeItem(index) { cart.splice(index,1); renderCart(); }
-    function changeQty(index, delta) {
-      const item = cart[index];
-      if (!item) return;
-      item.qty = Math.max(1, item.qty + delta);
-      renderCart();
-    }
-
-    function formatMoney(v) { return 'R$ ' + v.toFixed(2); }
-
-    function renderCart() {
-      const tbody = document.getElementById('saleItems');
-      tbody.innerHTML = '';
-      let subtotal = 0;
-      cart.forEach((it, idx) => {
-        const lineTotal = it.qty * it.price;
-        subtotal += lineTotal;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="py-3">
-            <div class="text-sm font-medium">${it.name}</div>
-            <div class="text-xs text-gray-500">Código: ${it.id}</div>
-          </td>
-          <td class="text-center py-3">
-            <div class="inline-flex items-center border rounded">
-              <button class="px-2 text-sm" onclick="changeQty(${idx}, -1)">−</button>
-              <div class="px-3 text-sm">${it.qty}</div>
-              <button class="px-2 text-sm" onclick="changeQty(${idx}, 1)">+</button>
-            </div>
-          </td>
-          <td class="text-right py-3">${formatMoney(lineTotal)}</td>
-          <td class="text-right py-3"><button class="text-red-600" onclick="removeItem(${idx})">✖</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const discountPerc = parseFloat(document.getElementById('discountInput').value) || 0;
-      const discountValue = subtotal * (discountPerc/100);
-      const total = subtotal - discountValue;
-
-      document.getElementById('subTotal').textContent = formatMoney(subtotal);
-      document.getElementById('discountDisplay').textContent = formatMoney(discountValue);
-      document.getElementById('totalDisplay').textContent = formatMoney(total);
-
-      document.getElementById('statItems').textContent = cart.reduce((s,i)=>s+i.qty,0);
-      document.getElementById('statSales').textContent = formatMoney(0); // placeholder
-    }
-
-    // search handlers
-    document.getElementById('searchInput').addEventListener('input', (e)=>renderCatalog(e.target.value));
-    document.getElementById('clearSearch').addEventListener('click', ()=>{ document.getElementById('searchInput').value=''; renderCatalog(''); });
-
-    // barcode input via pressing Enter (simulate scanner)
-    document.getElementById('searchInput').addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') {
-        const code = e.target.value.trim();
-        const found = products.find(p=>p.id === code || p.name.toLowerCase()===code.toLowerCase());
-        if (found) { addToCart(found); e.target.value=''; }
-        else alert('Produto não encontrado');
-      }
-    });
-
-    // discount input
-    document.getElementById('discountInput').addEventListener('input', renderCart);
-
-    // finalize / preview / cancel
-    document.getElementById('finalizeBtn').addEventListener('click', () => {
-      if (cart.length === 0) return alert('Nenhum item no carrinho!');
-      const method = document.getElementById('paymentMethod').value;
-      alert('Venda finalizada: ' + method + '\nTotal: ' + document.getElementById('totalDisplay').textContent);
-      // reset
-      cart = [];
-      renderCart();
-    });
-
-    document.getElementById('cancelBtn').addEventListener('click', ()=> {
-      if (confirm('Cancelar venda atual?')) { cart=[]; renderCart(); }
-    });
-
-    // preview invoice
-    const invoiceModal = document.getElementById('invoicePreviewModal');
-    document.getElementById('previewInvoiceBtn').addEventListener('click', ()=> {
-      const content = document.getElementById('invoicePreviewContent');
-      if (cart.length === 0) { content.innerHTML = '<p>Nenhum item</p>'; }
-      else {
-        let html = '<div class="p-4">';
-        html += '<h4 class="font-semibold mb-2">Fatura</h4>';
-        html += '<div class="text-xs text-gray-600 mb-2">Cliente: ' + (document.getElementById('customerName').value || 'Consumidor Final') + '</div>';
-        html += '<table class="w-full text-sm"><thead class="text-xs text-gray-500"><tr><th>Produto</th><th class="text-right">Qtd</th><th class="text-right">Preço</th></tr></thead><tbody>';
-        cart.forEach(it=>{
-          html += `<tr><td class="py-1">${it.name}</td><td class="text-right">${it.qty}</td><td class="text-right">${formatMoney(it.price*it.qty)}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        html += '<div class="mt-3 text-right font-semibold">Total: ' + document.getElementById('totalDisplay').textContent + '</div>';
-        html += '</div>';
-        content.innerHTML = html;
-      }
-      invoiceModal.classList.remove('hidden');
-    });
-    document.getElementById('closePreview').addEventListener('click', ()=> invoiceModal.classList.add('hidden'));
-    document.getElementById('printPreview').addEventListener('click', ()=> window.print());
-
-    // calculator
-    const calcBtn = document.getElementById('toggleCalc');
-    const calcPanel = document.getElementById('calculator');
-    function toggleCalculator(){ calcPanel.classList.toggle('hidden'); }
-    calcBtn.addEventListener('click', ()=> toggleCalculator());
-    let calcVal = '';
-    window.calcAppend = (v) => { calcVal += v; document.getElementById('calcDisplay').value = calcVal; }
-    window.calcClear = ()=>{ calcVal=''; document.getElementById('calcDisplay').value=''; }
-    window.calcResult = ()=> {
-      try { const res = eval(calcVal); document.getElementById('calcDisplay').value = res; calcVal = String(res); } catch { document.getElementById('calcDisplay').value='Erro'; calcVal=''; }
-    }
-    window.toggleCalculator = toggleCalculator;
-
-    // footer date/time
-    function updateFooter() {
-      const d = new Date();
-      document.getElementById('footerDate').textContent = d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-    }
-    setInterval(updateFooter, 1000); updateFooter();
-
-    // keyboard shortcuts (F2 focus customer, F3 toggle calc, F9 finalize)
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'F2') { e.preventDefault(); document.getElementById('customerName').focus(); }
-      if (e.key === 'F3') { e.preventDefault(); toggleCalculator(); }
-      if (e.key === 'F9') { e.preventDefault(); document.getElementById('finalizeBtn').click(); }
-    });
-
-    // inicial
-    renderCatalog('');
-    renderCart();
-  </script>
 </body>
 </html>

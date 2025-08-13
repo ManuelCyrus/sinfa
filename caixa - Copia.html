@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDV - Farmácia</title>
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="./output.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow">
+    <div class="flex items-center gap-4">
+      <i class="fas fa-store text-2xl"></i>
+      <span class="text-xl font-bold">PDV Farmácia</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <i class="fas fa-user-circle text-xl"></i>
+      <span>Manuel Fulama</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="flex min-h-screen">
+<aside class="w-64 bg-white shadow-md p-4 space-y-6">
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Geral</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-home"></i> Dashboard
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Cadastros</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-user-plus"></i> Clientes
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-users-cog"></i> Funcionários
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-truck"></i> Fornecedores
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-pills"></i> Produtos
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Movimentações</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cart-plus"></i> Compras
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cash-register"></i> Vendas
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-undo"></i> Devoluções
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Financeiro</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-file-invoice-dollar"></i> Contas a pagar
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-hand-holding-usd"></i> Contas a receber
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cash-register"></i> Caixa
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Relatórios</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-chart-line"></i> Vendas por período
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-boxes"></i> Estoque
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-receipt"></i> Financeiro
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Configurações</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-user-cog"></i> Usuários
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-lock"></i> Permissões
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cogs"></i> Sistema
+      </li>
+    </ul>
+  </div>
+</aside>
+
+
+  
+
+<!-- conteudo principal -->
+<div class="max-w-4xl mx-auto bg-white shadow rounded p-6">
+    <h1 class="text-xl font-semibold mb-4">Caixa | Ponto de Venda</h1>
+
+    <!-- Leitura de Código ou QR -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium">Código do Produto / QR</label>
+      <input type="text" id="barcodeInput" placeholder="Digite ou escaneie o código"
+             class="border p-2 w-full rounded mt-1"/>
+    </div>
+
+    <!-- Lista de Itens -->
+    <div class="mb-6 overflow-x-auto">
+      <table class="w-full text-left border">
+        <thead>
+          <tr class="bg-gray-200 text-sm">
+            <th class="p-2">Produto</th>
+            <th class="p-2">Qtd</th>
+            <th class="p-2">Preço Unit.</th>
+            <th class="p-2">Total</th>
+            <th class="p-2">Remover</th>
+          </tr>
+        </thead>
+        <tbody id="saleItems"></tbody>
+      </table>
+    </div>
+
+    <!-- Resumo -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div>
+        <label>Desconto (%)</label>
+        <input type="number" id="discountInput" value="0"
+               class="border p-2 w-full rounded mt-1">
+      </div>
+      <div class="md:col-span-2">
+        <label>Forma de Pagamento</label>
+        <select id="paymentMethod" class="border p-2 w-full rounded mt-1">
+          <option>Dinheiro</option>
+          <option>Cartão de Crédito</option>
+          <option>Cartão de Débito</option>
+          <option>PIX</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4 flex justify-between text-lg font-semibold">
+      <span>Total:</span>
+      <span id="totalDisplay">R$ 0,00</span>
+    </div>
+
+    <!-- Botão Finalizar -->
+    <button id="finalizeBtn" class="mt-4 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 w-full">
+      Finalizar Venda
+    </button>
+  </div>
+
+  <script>
+    const productsDB = {
+      '12345': { name: 'Dipirona', price: 10 },
+      '67890': { name: 'Paracetamol', price: 15 },
+      '11111': { name: 'Ibuprofeno', price: 20 }
+    };
+
+    const cart = [];
+
+    const renderCart = () => {
+      const tbody = document.getElementById("saleItems");
+      tbody.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        const row = document.createElement("tr");
+        const itemTotal = item.qty * item.price;
+        total += itemTotal;
+
+        row.innerHTML = `
+          <td class="p-2">${item.name}</td>
+          <td class="p-2">${item.qty}</td>
+          <td class="p-2">R$ ${item.price.toFixed(2)}</td>
+          <td class="p-2">R$ ${itemTotal.toFixed(2)}</td>
+          <td class="p-2 text-center"><button onclick="removeItem(${index})" class="text-red-600">✖</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const discountPercent = parseFloat(document.getElementById("discountInput").value) || 0;
+      const discountedTotal = total - (total * (discountPercent / 100));
+      document.getElementById("totalDisplay").textContent = `R$ ${discountedTotal.toFixed(2)}`;
+    };
+
+    const removeItem = (index) => {
+      cart.splice(index, 1);
+      renderCart();
+    };
+
+    document.getElementById("barcodeInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const code = this.value.trim();
+        const product = productsDB[code];
+        if (product) {
+          const existing = cart.find(i => i.name === product.name);
+          if (existing) {
+            existing.qty += 1;
+          } else {
+            cart.push({ name: product.name, price: product.price, qty: 1 });
+          }
+          this.value = "";
+          renderCart();
+        } else {
+          alert("Produto não encontrado");
+        }
+      }
+    });
+
+    document.getElementById("discountInput").addEventListener("input", renderCart);
+
+    document.getElementById("finalizeBtn").addEventListener("click", () => {
+      if (cart.length === 0) return alert("Nenhum item na venda!");
+
+      const payment = document.getElementById("paymentMethod").value;
+      alert("Venda finalizada com " + payment);
+      cart.length = 0;
+      renderCart();
+    });
+  </script>
+</body>
+</html>

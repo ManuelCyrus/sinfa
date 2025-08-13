@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Farmacêutico — Gestor de Estoque</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    /* small UI tweaks */
+    .sidebar { transition: width .25s ease; }
+    .status-badge { font-size: 0.7rem; padding: .15rem .5rem; border-radius: .375rem; }
+    .table-scroll { max-height: 46vh; overflow:auto; }
+    .thead-sticky th { position: sticky; top: 0; background: white; z-index: 10; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 font-sans">
+
+  <!-- TOPBAR -->
+  <header class="bg-white border-b sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-store text-2xl text-blue-600"></i>
+        <div>
+          <div class="text-lg font-semibold">ERP — Farmácia</div>
+          <div class="text-xs text-gray-500">Gestor de Estoque</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center bg-gray-50 border rounded px-2 py-1 gap-2">
+          <i class="fas fa-search text-gray-400"></i>
+          <input id="globalSearch" class="bg-transparent focus:outline-none text-sm" placeholder="Pesquisar por nome, SKU, fornecedor..." />
+        </div>
+
+        <button id="btnExportCSV" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm">Exportar CSV</button>
+        <button id="btnPrint" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm">Imprimir</button>
+
+        <div class="relative">
+          <button id="userBtn" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-50">
+            <i class="fas fa-user-circle text-2xl text-gray-600"></i>
+            <div class="hidden sm:block text-sm text-left">
+              <div class="font-medium">Manuel Fulama</div>
+              <div class="text-xs text-gray-500">Gestor</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex pt-4 px-4 gap-6 max-w-7xl mx-auto w-full">
+    <!-- SIDEBAR (pode integrar com sua barra existente) -->
+    <aside class="w-64 bg-white border rounded shadow p-4 h-[calc(100vh-120px)] sticky top-20 overflow-auto">
+      <div class="text-xs text-gray-400 uppercase font-semibold mb-3">Estoque - Menu</div>
+      <ul class="space-y-2 text-sm">
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-boxes text-gray-500 w-5"></i> Visão Geral</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-warehouse text-gray-500 w-5"></i> Localizações</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-truck text-gray-500 w-5"></i> Fornecedores</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-file-invoice-dollar text-gray-500 w-5"></i> Entradas/Compras</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-exchange-alt text-gray-500 w-5"></i> Movimentos</li>
+      </ul>
+
+      <div class="mt-6">
+        <div class="text-xs text-gray-400 uppercase font-semibold mb-2">Ações rápidas</div>
+        <div class="grid gap-2">
+          <button id="btnAddProduct" class="bg-blue-600 text-white px-3 py-2 rounded text-sm flex items-center gap-2 justify-center"><i class="fas fa-plus"></i> Novo Produto</button>
+          <button id="btnBulkReorder" class="bg-yellow-50 text-yellow-700 px-3 py-2 rounded text-sm flex items-center gap-2 justify-center"><i class="fas fa-shopping-cart"></i> Reordenar Selecionados</button>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <div class="text-xs text-gray-400 uppercase font-semibold mb-2">Filtros salvos</div>
+        <ul class="text-sm space-y-1">
+          <li class="p-2 rounded hover:bg-gray-50 cursor-pointer">Todos</li>
+          <li class="p-2 rounded hover:bg-gray-50 cursor-pointer">Crítico | <span class="text-red-600 font-semibold">Ação</span></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1">
+
+      <!-- KPI cards -->
+      <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+        <div class="bg-white p-4 rounded shadow flex flex-col">
+          <div class="text-xs text-gray-500">Total SKUs</div>
+          <div id="kpiTotalSKUs" class="text-2xl font-bold">0</div>
+          <div class="text-xs text-gray-400 mt-1">Produtos únicos</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow flex flex-col">
+          <div class="text-xs text-gray-500">Quantidade Total</div>
+          <div id="kpiTotalQty" class="text-2xl font-bold">0</div>
+          <div class="text-xs text-gray-400 mt-1">Unidades em stock</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow flex flex-col">
+          <div class="text-xs text-gray-500">Valor em Stock</div>
+          <div id="kpiValue" class="text-2xl font-bold text-green-600">R$ 0,00</div>
+          <div class="text-xs text-gray-400 mt-1">Custo total aproximado</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow flex flex-col">
+          <div class="text-xs text-gray-500">Vencendo (<30d)</div>
+          <div id="kpiExpiring" class="text-2xl font-bold text-orange-500">0</div>
+          <div class="text-xs text-gray-400 mt-1">Lotes a vencer em 30 dias</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow flex flex-col">
+          <div class="text-xs text-gray-500">Estoque Baixo</div>
+          <div id="kpiLow" class="text-2xl font-bold text-red-600">0</div>
+          <div class="text-xs text-gray-400 mt-1">Produtos abaixo do mínimo</div>
+        </div>
+      </section>
+
+      <!-- Filters row -->
+      <section class="bg-white p-4 rounded shadow mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <div class="flex gap-2">
+            <input id="filterName" placeholder="Nome ou SKU" class="flex-1 border rounded px-3 py-2" />
+            <select id="filterCategory" class="border rounded px-3 py-2">
+              <option value="">Todas as categorias</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2">
+            <select id="filterSupplier" class="border rounded px-3 py-2">
+              <option value="">Todos os fornecedores</option>
+            </select>
+            <select id="filterLocation" class="border rounded px-3 py-2">
+              <option value="">Todas as localizações</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            <select id="filterStatus" class="border rounded px-3 py-2">
+              <option value="">Todos os status</option>
+              <option value="ok">OK</option>
+              <option value="low">Baixo</option>
+              <option value="expiring">Vencendo</option>
+              <option value="expired">Vencido</option>
+            </select>
+            <select id="sortBy" class="border rounded px-3 py-2">
+              <option value="name">Ordenar: Nome</option>
+              <option value="qty_desc">Quantidade ↓</option>
+              <option value="qty_asc">Quantidade ↑</option>
+              <option value="expiry">Validade</option>
+              <option value="value_desc">Valor ↓</option>
+            </select>
+            <button id="btnResetFilters" class="bg-gray-50 border px-3 py-2 rounded">Limpar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts + Table -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Charts -->
+        <div class="lg:col-span-1 space-y-4">
+          <div class="bg-white p-4 rounded shadow">
+            <div class="flex justify-between items-center mb-2">
+              <div class="font-semibold">Valor em Stock por Categoria</div>
+              <div class="text-xs text-gray-400">Última atualização</div>
+            </div>
+            <canvas id="chartByCategory" height="240"></canvas>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow">
+            <div class="flex justify-between items-center mb-2">
+              <div class="font-semibold">Tendência de Valor (30 dias)</div>
+              <div class="text-xs text-gray-400">Visual</div>
+            </div>
+            <canvas id="chartTrend" height="160"></canvas>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow">
+            <div class="font-semibold mb-2">Alertas Rápidos</div>
+            <ul id="quickAlerts" class="text-sm space-y-2 text-gray-700"></ul>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="lg:col-span-2">
+          <div class="bg-white p-4 rounded shadow">
+            <div class="flex justify-between items-center mb-3">
+              <div class="font-semibold">Inventário</div>
+              <div class="flex items-center gap-2">
+                <label class="text-xs text-gray-500">Exibir:</label>
+                <select id="perPage" class="border rounded px-2 py-1 text-sm">
+                  <option>10</option><option>25</option><option>50</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-scroll border rounded">
+              <table class="min-w-full">
+                <thead class="thead-sticky bg-gray-50">
+                  <tr>
+                    <th class="p-2 border-b text-left"><input id="selectAll" type="checkbox" /></th>
+                    <th class="p-2 border-b text-left">SKU</th>
+                    <th class="p-2 border-b text-left">Produto</th>
+                    <th class="p-2 border-b text-left hidden md:table-cell">Categoria</th>
+                    <th class="p-2 border-b text-left">Fornecedor</th>
+                    <th class="p-2 border-b text-center">Local</th>
+                    <th class="p-2 border-b text-center">Qty</th>
+                    <th class="p-2 border-b text-center">Min</th>
+                    <th class="p-2 border-b text-right">Custo</th>
+                    <th class="p-2 border-b text-right">Preço</th>
+                    <th class="p-2 border-b text-right">Valor</th>
+                    <th class="p-2 border-b text-left">Validade</th>
+                    <th class="p-2 border-b text-left">Últ. Mov.</th>
+                    <th class="p-2 border-b text-left">Status</th>
+                    <th class="p-2 border-b text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryTable" class="text-sm"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination + bulk actions -->
+            <div class="mt-3 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <button id="btnBulkExport" class="px-3 py-1 border rounded text-sm">Exportar Seleção</button>
+                <button id="btnBulkReorder2" class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-sm">Reordenar Seleção</button>
+                <button id="btnBulkDelete" class="px-3 py-1 border rounded text-sm text-red-600">Excluir Seleção</button>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="prevPage" class="px-3 py-1 border rounded text-sm">Anterior</button>
+                <div class="text-sm text-gray-600">Página <span id="currentPage">1</span></div>
+                <button id="nextPage" class="px-3 py-1 border rounded text-sm">Próximo</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <!-- Edit product modal -->
+  <div id="modalEdit" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold">Editar Produto</h3>
+        <button onclick="closeModal('modalEdit')" class="text-gray-400 hover:text-gray-700">✖</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <input id="editSKU" class="border rounded px-3 py-2" placeholder="SKU" />
+        <input id="editName" class="border rounded px-3 py-2" placeholder="Nome do produto" />
+        <select id="editCategory" class="border rounded px-3 py-2"><option>Medicamento</option></select>
+        <input id="editSupplier" class="border rounded px-3 py-2" placeholder="Fornecedor" />
+        <input id="editLocation" class="border rounded px-3 py-2" placeholder="Localização (prateleira)" />
+        <input id="editQty" type="number" class="border rounded px-3 py-2" placeholder="Quantidade" />
+        <input id="editMin" type="number" class="border rounded px-3 py-2" placeholder="Min" />
+        <input id="editMax" type="number" class="border rounded px-3 py-2" placeholder="Max" />
+        <input id="editCost" type="number" step="0.01" class="border rounded px-3 py-2" placeholder="Custo" />
+        <input id="editPrice" type="number" step="0.01" class="border rounded px-3 py-2" placeholder="Preço Venda" />
+        <input id="editExpiry" type="date" class="border rounded px-3 py-2" />
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closeModal('modalEdit')" class="px-3 py-1 border rounded">Cancelar</button>
+        <button id="saveEdit" class="px-3 py-1 bg-blue-600 text-white rounded">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movement log modal -->
+  <div id="modalLog" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-3xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold">Histórico de Movimentos</h3>
+        <button onclick="closeModal('modalLog')" class="text-gray-400 hover:text-gray-700">✖</button>
+      </div>
+      <div id="movementContent" class="text-sm">
+        <!-- preenchido dinamicamente -->
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button onclick="closeModal('modalLog')" class="px-3 py-1 border rounded">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reorder modal -->
+  <div id="modalReorder" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold">Repor Produto</h3>
+        <button onclick="closeModal('modalReorder')" class="text-gray-400 hover:text-gray-700">✖</button>
+      </div>
+      <div class="grid grid-cols-1 gap-3">
+        <div>
+          <label class="text-sm text-gray-600">Produto</label>
+          <div id="reorderProduct" class="font-medium">—</div>
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Quantidade a repor</label>
+          <input id="reorderQty" type="number" class="border rounded px-3 py-2" value="10" />
+        </div>
+        <div>
+          <label class="text-sm text-gray-600">Fornecedor</label>
+          <input id="reorderSupplier" class="border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closeModal('modalReorder')" class="px-3 py-1 border rounded">Cancelar</button>
+        <button id="confirmReorder" class="px-3 py-1 bg-green-600 text-white rounded">Repor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS: lógica (dados dummy) -->
+  <script>
+    // utils
+    const money = v => 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+    const rand = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+    const today = new Date();
+
+    // Dummy master data
+    const categories = ['Analgésico','Antibiótico','Vitaminas','Higiene','Suplementos'];
+    const suppliers = ['MedFarma LTDA','BioPharma','SaudeDistrib','LabX'];
+    const locations = ['Prat. A1','Prat. B2','Armazém','Frio'];
+
+    // generate dummy products (50 items)
+    const products = [];
+    for(let i=1;i<=50;i++){
+      const sku = 'P' + String(1000+i);
+      const name = ['Dipirona','Paracetamol','Ibuprofeno','Amoxicilina','Vitamina C','Omeprazol','Losartana'][i % 7] + ' ' + (i);
+      const category = categories[i % categories.length];
+      const supplier = suppliers[i % suppliers.length];
+      const location = locations[i % locations.length];
+      const min = rand(5,20);
+      const qty = rand(0,80);
+      const cost = (rand(50,200)/10);
+      const price = +(cost * (1 + rand(20,80)/100)).toFixed(2);
+      // expiry random: some expired, some in 20-90 days, some far
+      const expiry = new Date(); expiry.setDate(today.getDate() + rand(-120,400));
+      const lastMov = new Date(); lastMov.setDate(today.getDate() - rand(1,120));
+      const lastMovStr = lastMov.toISOString();
+      products.push({
+        id: sku, name, category, supplier, location, qty, min, max: min+50,
+        cost, price, expiry: expiry.toISOString().slice(0,10), lastMov: lastMovStr
+      });
+    }
+
+    // dummy movement logs
+    const movementLogs = {};
+    products.forEach(p=>{
+      movementLogs[p.id] = [];
+      const moves = rand(3,12);
+      for(let m=0;m<moves;m++){
+        const delta = rand(-20,50);
+        movementLogs[p.id].push({
+          date: new Date(Date.now() - rand(1,180)*24*3600*1000).toISOString(),
+          qty: delta,
+          type: delta>0 ? 'Entrada' : 'Saída',
+          note: delta>0 ? 'Compra fornecedor' : 'Venda/Correção'
+        });
+      }
+    });
+
+    /* ---------- Elements ---------- */
+    const inventoryTable = document.getElementById('inventoryTable');
+    const kTotalSKUs = document.getElementById('kpiTotalSKUs');
+    const kTotalQty = document.getElementById('kpiTotalQty');
+    const kValue = document.getElementById('kpiValue');
+    const kExpiring = document.getElementById('kpiExpiring');
+    const kLow = document.getElementById('kpiLow');
+    const quickAlerts = document.getElementById('quickAlerts');
+
+    // filters
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSupplier = document.getElementById('filterSupplier');
+    const filterLocation = document.getElementById('filterLocation');
+    const filterName = document.getElementById('filterName');
+    const filterStatus = document.getElementById('filterStatus');
+    const sortBy = document.getElementById('sortBy');
+    const globalSearch = document.getElementById('globalSearch');
+    const perPageSel = document.getElementById('perPage');
+
+    // pagination state
+    let currentPage = 1;
+    let perPage = parseInt(perPageSel.value) || 10;
+
+    // selection
+    let selected = new Set();
+
+    // populate filter selects
+    function populateFilters(){
+      categories.forEach(c=>{
+        const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+        filterCategory.appendChild(opt);
+      });
+      suppliers.forEach(s=>{
+        const opt = document.createElement('option'); opt.value = s; opt.textContent = s;
+        filterSupplier.appendChild(opt);
+      });
+      locations.forEach(l=>{
+        const opt = document.createElement('option'); opt.value = l; opt.textContent = l;
+        filterLocation.appendChild(opt);
+      });
+    }
+
+    populateFilters();
+
+    /* ---------- Helper: status and color ---------- */
+    function computeStatus(product){
+      const qty = product.qty;
+      const min = product.min;
+      const exp = new Date(product.expiry);
+      const daysToExp = Math.ceil((exp - new Date())/ (24*3600*1000));
+      if (daysToExp < 0) return { key: 'expired', label: 'Vencido', color: 'red' };
+      if (daysToExp <= 30) return { key: 'expiring', label: `Vencendo (${daysToExp}d)`, color: 'orange' };
+      if (qty <= min) return { key: 'low', label: 'Baixo', color: 'red' };
+      return { key: 'ok', label: 'OK', color: 'green' };
+    }
+
+    /* ---------- Render KPIs ---------- */
+    function renderKPIs(list){
+      const totalSKUs = list.length;
+      const totalQty = list.reduce((s,p) => s + p.qty, 0);
+      const totalValue = list.reduce((s,p) => s + (p.cost * p.qty), 0);
+      const expiringCount = list.filter(p=> computeStatus(p).key === 'expiring').length;
+      const lowCount = list.filter(p=> computeStatus(p).key === 'low').length;
+
+      kTotalSKUs.textContent = totalSKUs;
+      kTotalQty.textContent = totalQty;
+      kValue.textContent = money(totalValue);
+      kExpiring.textContent = expiringCount;
+      kLow.textContent = lowCount;
+
+      quickAlerts.innerHTML = '';
+      const alerts = [];
+      if (expiringCount>0) alerts.push(`${expiringCount} itens vencendo em 30 dias`);
+      if (lowCount>0) alerts.push(`${lowCount} itens com stock baixo`);
+      const expiredCount = list.filter(p=> computeStatus(p).key === 'expired').length;
+      if (expiredCount>0) alerts.push(`${expiredCount} itens vencidos`);
+
+      if (alerts.length===0){
+        const li = document.createElement('li'); li.textContent = 'Sem alertas no momento.'; quickAlerts.appendChild(li);
+      } else {
+        alerts.forEach(a => {
+          const li = document.createElement('li'); li.className='text-sm text-red-600'; li.textContent = a; quickAlerts.appendChild(li);
+        });
+      }
+    }
+
+    /* ---------- Chart: by category & trend ---------- */
+    const chartByCatCtx = document.getElementById('chartByCategory').getContext('2d');
+    const chartTrendCtx = document.getElementById('chartTrend').getContext('2d');
+
+    const chartByCat = new Chart(chartByCatCtx, {
+      type: 'doughnut',
+      data: { labels: [], datasets: [{ data: [], backgroundColor: ['#60A5FA','#34D399','#F59E0B','#A78BFA','#94A3B8'] }]},
+      options: { responsive:true, plugins:{legend:{position:'bottom'}}}
+    });
+
+    const chartTrend = new Chart(chartTrendCtx, {
+      type: 'line',
+      data: { labels: [], datasets: [{ label:'Valor (R$)', data: [], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)', fill:true }]},
+      options: { responsive:true, scales:{ y:{beginAtZero:true} } }
+    });
+
+    function updateCharts(list){
+      // by category: sum value (cost*qty)
+      const catMap = {};
+      list.forEach(p => { catMap[p.category] = (catMap[p.category]||0) + p.cost*p.qty; });
+      chartByCat.data.labels = Object.keys(catMap);
+      chartByCat.data.datasets[0].data = Object.values(catMap).map(v=> + (v/100).toFixed(2)); // scaled
+      chartByCat.update();
+
+      // trend: dummy: last 30 days sum by random
+      const labels = []; const values = [];
+      for(let i=29;i>=0;i--){
+        const d = new Date(); d.setDate(today.getDate()-i);
+        labels.push(d.toISOString().slice(0,10));
+        // compute random trend based on total value
+        const base = list.reduce((s,p)=>s + p.cost*p.qty,0);
+        values.push( +( (base/100) * (0.6 + Math.random()*0.8) ).toFixed(2) );
+      }
+      chartTrend.data.labels = labels;
+      chartTrend.data.datasets[0].data = values;
+      chartTrend.update();
+    }
+
+    /* ---------- Render Inventory Table ---------- */
+    let filteredProducts = [...products];
+
+    function renderTable(){
+      // apply filters
+      const name = (filterName.value || '').trim().toLowerCase();
+      const cat = filterCategory.value;
+      const sup = filterSupplier.value;
+      const loc = filterLocation.value;
+      const status = filterStatus.value;
+      const g = (globalSearch.value || '').trim().toLowerCase();
+
+      filteredProducts = products.filter(p => {
+        if (name && ! (p.name.toLowerCase().includes(name) || p.id.toLowerCase().includes(name))) return false;
+        if (cat && p.category !== cat) return false;
+        if (sup && p.supplier !== sup) return false;
+        if (loc && p.location !== loc) return false;
+        if (g && ! (p.name.toLowerCase().includes(g) || p.id.toLowerCase().includes(g) || p.supplier.toLowerCase().includes(g))) return false;
+        if (status){
+          const st = computeStatus(p).key;
+          if (st !== status) return false;
+        }
+        return true;
+      });
+
+      // sorting
+      const s = sortBy.value;
+      if (s === 'qty_desc') filteredProducts.sort((a,b)=> b.qty - a.qty);
+      else if (s === 'qty_asc') filteredProducts.sort((a,b)=> a.qty - b.qty);
+      else if (s === 'expiry') filteredProducts.sort((a,b)=> new Date(a.expiry) - new Date(b.expiry));
+      else if (s === 'value_desc') filteredProducts.sort((a,b)=> b.cost*b.qty - a.cost*a.qty);
+      else filteredProducts.sort((a,b)=> a.name.localeCompare(b.name));
+
+      // pagination
+      perPage = parseInt(perPageSel.value) || 10;
+      const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage-1)*perPage;
+      const pageItems = filteredProducts.slice(start, start+perPage);
+
+      // render rows
+      inventoryTable.innerHTML = '';
+      pageItems.forEach(p => {
+        const tr = document.createElement('tr');
+        const status = computeStatus(p);
+        const isExpired = status.key === 'expired';
+        const isLow = status.key === 'low';
+        const isExpiring = status.key === 'expiring';
+
+        tr.innerHTML = `
+          <td class="p-2 border-b"><input data-id="${p.id}" class="rowSelect" type="checkbox" ${selected.has(p.id)?'checked':''} /></td>
+          <td class="p-2 border-b font-medium">${p.id}</td>
+          <td class="p-2 border-b">${p.name}</td>
+          <td class="p-2 border-b hidden md:table-cell text-sm text-gray-600">${p.category}</td>
+          <td class="p-2 border-b text-sm">${p.supplier}</td>
+          <td class="p-2 border-b text-center text-sm">${p.location}</td>
+          <td class="p-2 border-b text-center ${isExpired? 'text-red-600 font-semibold':''} ${isLow? 'text-red-600':''}">${p.qty}</td>
+          <td class="p-2 border-b text-center">${p.min}</td>
+          <td class="p-2 border-b text-right">${money(p.cost)}</td>
+          <td class="p-2 border-b text-right">${money(p.price)}</td>
+          <td class="p-2 border-b text-right">${money(p.cost * p.qty)}</td>
+          <td class="p-2 border-b">${p.expiry}</td>
+          <td class="p-2 border-b text-sm text-gray-500">${new Date(p.lastMov).toLocaleDateString()}</td>
+          <td class="p-2 border-b">
+            <span class="status-badge ${status.color === 'green' ? 'bg-green-100 text-green-700' : status.color === 'orange'? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}">${status.label}</span>
+          </td>
+          <td class="p-2 border-b text-right">
+            <div class="flex justify-end gap-2">
+              <button class="text-blue-600 btn-edit" data-id="${p.id}" title="Editar"><i class="fas fa-edit"></i></button>
+              <button class="text-indigo-600 btn-log" data-id="${p.id}" title="Movimentos"><i class="fas fa-history"></i></button>
+              <button class="text-green-600 btn-reorder" data-id="${p.id}" title="Repor"><i class="fas fa-shopping-cart"></i></button>
+            </div>
+          </td>
+        `;
+        inventoryTable.appendChild(tr);
+      });
+
+      // attach row checkbox handlers
+      document.querySelectorAll('.rowSelect').forEach(cb=>{
+        cb.addEventListener('change',(e)=>{
+          const id = e.target.dataset.id;
+          if (e.target.checked) selected.add(id); else selected.delete(id);
+        });
+      });
+
+      // attach action buttons
+      document.querySelectorAll('.btn-edit').forEach(b=> b.addEventListener('click', (e)=> openEdit(b.dataset.id)));
+      document.querySelectorAll('.btn-log').forEach(b=> b.addEventListener('click', (e)=> openLog(b.dataset.id)));
+      document.querySelectorAll('.btn-reorder').forEach(b=> b.addEventListener('click', (e)=> openReorder(b.dataset.id)));
+
+      // selectAll
+      document.getElementById('selectAll').checked = pageItems.every(p=> selected.has(p.id));
+      document.getElementById('currentPage').textContent = currentPage;
+
+      // update KPIs & charts
+      renderKPIs(filteredProducts);
+      updateCharts(filteredProducts);
+    }
+
+    // initial render
+    renderTable();
+
+    /* ---------- actions: prev/next, perPage ---------- */
+    document.getElementById('prevPage').addEventListener('click', ()=> {
+      if (currentPage>1) { currentPage--; renderTable(); }
+    });
+    document.getElementById('nextPage').addEventListener('click', ()=> {
+      const totalPages = Math.max(1, Math.ceil(filteredProducts.length / perPage));
+      if (currentPage < totalPages) { currentPage++; renderTable(); }
+    });
+    perPageSel.addEventListener('change', ()=> { currentPage = 1; renderTable(); });
+
+    // filters handlers
+    [filterCategory, filterSupplier, filterLocation, filterStatus, sortBy, filterName, globalSearch].forEach(el=>{
+      el.addEventListener('input', ()=> { currentPage =1; renderTable(); });
+      el.addEventListener('change', ()=> { currentPage =1; renderTable(); });
+    });
+    document.getElementById('btnResetFilters').addEventListener('click', ()=> {
+      filterCategory.value=''; filterSupplier.value=''; filterLocation.value=''; filterStatus.value=''; filterName.value=''; globalSearch.value=''; sortBy.value='name';
+      currentPage=1; renderTable();
+    });
+
+    // select all checkbox
+    document.getElementById('selectAll').addEventListener('change', (e)=>{
+      const checked = e.target.checked;
+      // current page items only
+      const start = (currentPage-1)*perPage; const pageItems = filteredProducts.slice(start, start+perPage);
+      pageItems.forEach(p => { if (checked) selected.add(p.id); else selected.delete(p.id); });
+      renderTable();
+    });
+
+    /* ---------- Modal functions ---------- */
+    function openEdit(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return alert('Produto não encontrado');
+      document.getElementById('editSKU').value = p.id;
+      document.getElementById('editName').value = p.name;
+      document.getElementById('editCategory').value = p.category;
+      document.getElementById('editSupplier').value = p.supplier;
+      document.getElementById('editLocation').value = p.location;
+      document.getElementById('editQty').value = p.qty;
+      document.getElementById('editMin').value = p.min;
+      document.getElementById('editMax').value = p.max;
+      document.getElementById('editCost').value = p.cost;
+      document.getElementById('editPrice').value = p.price;
+      document.getElementById('editExpiry').value = p.expiry;
+      document.getElementById('modalEdit').classList.remove('hidden');
+
+      // save handler
+      document.getElementById('saveEdit').onclick = () => {
+        p.name = document.getElementById('editName').value;
+        p.category = document.getElementById('editCategory').value;
+        p.supplier = document.getElementById('editSupplier').value;
+        p.location = document.getElementById('editLocation').value;
+        p.qty = Number(document.getElementById('editQty').value);
+        p.min = Number(document.getElementById('editMin').value);
+        p.max = Number(document.getElementById('editMax').value);
+        p.cost = Number(document.getElementById('editCost').value);
+        p.price = Number(document.getElementById('editPrice').value);
+        p.expiry = document.getElementById('editExpiry').value;
+        p.lastMov = new Date().toISOString();
+        closeModal('modalEdit');
+        renderTable();
+      };
+    }
+
+    function openLog(id){
+      const logs = movementLogs[id] || [];
+      const content = document.getElementById('movementContent');
+      content.innerHTML = '';
+      if (logs.length === 0) content.innerHTML = '<p class="text-sm text-gray-500">Nenhum movimento disponível.</p>';
+      else {
+        const table = document.createElement('table'); table.className = 'w-full text-sm';
+        table.innerHTML = `<thead><tr class="text-xs text-gray-500"><th>Data</th><th>Tipo</th><th>Qtd</th><th>Nota</th></tr></thead>`;
+        const tbody = document.createElement('tbody');
+        logs.sort((a,b)=> new Date(b.date)-new Date(a.date)).forEach(l=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="py-1">${new Date(l.date).toLocaleString()}</td><td class="py-1">${l.type}</td><td class="py-1">${l.qty}</td><td class="py-1 text-gray-600">${l.note}</td>`;
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        content.appendChild(table);
+      }
+      document.getElementById('modalLog').classList.remove('hidden');
+    }
+
+    function openReorder(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('reorderProduct').textContent = `${p.id} — ${p.name}`;
+      document.getElementById('reorderQty').value = Math.max(1, p.min * 2);
+      document.getElementById('reorderSupplier').value = p.supplier;
+      document.getElementById('modalReorder').classList.remove('hidden');
+      document.getElementById('confirmReorder').onclick = () => {
+        const qty = Number(document.getElementById('reorderQty').value);
+        p.qty += qty;
+        movementLogs[p.id] = movementLogs[p.id] || [];
+        movementLogs[p.id].push({ date: new Date().toISOString(), qty, type: 'Entrada', note: 'Reordenação manual' });
+        closeModal('modalReorder');
+        renderTable();
+      };
+    }
+
+    function closeModal(id){
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // close modals on esc
+    document.addEventListener('keydown', (e)=> { if(e.key==='Escape'){ ['modalEdit','modalLog','modalReorder'].forEach(id=>document.getElementById(id).classList.add('hidden')); }});
+
+    /* ---------- Export CSV & Print ---------- */
+    function exportCSV(list){
+      const rows = [['SKU','Nome','Categoria','Fornecedor','Local','Qty','Min','Custo','Preço','Valor','Validade','ÚltMov','Status']];
+      list.forEach(p => {
+        const st = computeStatus(p).label;
+        rows.push([p.id,p.name,p.category,p.supplier,p.location,p.qty,p.min,p.cost,p.price,(p.cost*p.qty),p.expiry,p.lastMov,st]);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'estoque_export.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('btnExportCSV').addEventListener('click', ()=> exportCSV(filteredProducts));
+    document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
+    document.getElementById('btnBulkExport').addEventListener('click', ()=> {
+      const list = products.filter(p=> selected.has(p.id));
+      if(list.length===0) return alert('Nenhum item selecionado');
+      exportCSV(list);
+    });
+
+    // bulk reorder (simple)
+    document.getElementById('btnBulkReorder').addEventListener('click', ()=> {
+      const list = products.filter(p=> selected.has(p.id));
+      if(list.length===0) return alert('Selecione itens para reordenar');
+      // naive: open reorder for first selected only (demo)
+      openReorder(list[0].id);
+    });
+    document.getElementById('btnBulkReorder2').addEventListener('click', ()=> document.getElementById('btnBulkReorder').click());
+    document.getElementById('btnBulkDelete').addEventListener('click', ()=> {
+      if(!confirm('Remover itens selecionados do sistema? Esta ação é irreversível (demo).')) return;
+      for(const id of [...selected]) {
+        const idx = products.findIndex(p=>p.id===id);
+        if(idx>=0) products.splice(idx,1);
+        selected.delete(id);
+      }
+      renderTable();
+    });
+
+    // quick add product
+    document.getElementById('btnAddProduct').addEventListener('click', ()=> {
+      // simple new product modal flow
+      const sku = 'P' + (1000 + products.length + 1);
+      const newP = { id: sku, name: 'Novo Produto ' + (products.length+1), category: categories[0], supplier: suppliers[0], location: locations[0], qty: 0, min: 5, max:50, cost: 5.00, price: 8.00, expiry: new Date(Date.now()+365*24*3600*1000).toISOString().slice(0,10), lastMov: new Date().toISOString() };
+      products.unshift(newP); // add top
+      renderTable();
+      openEdit(newP.id);
+    });
+
+    // select supplier filter values from products unique suppliers
+    function refreshSuppliersLocations(){
+      // clear then repopulate unique values if not already in list (useful if dynamic)
+      const sSet = new Set(products.map(p=>p.supplier));
+      const lSet = new Set(products.map(p=>p.location));
+      filterSupplier.innerHTML = '<option value="">Todos os fornecedores</option>';
+      sSet.forEach(s=> { const opt=document.createElement('option'); opt.value=s; opt.textContent=s; filterSupplier.appendChild(opt); });
+      filterLocation.innerHTML = '<option value="">Todas as localizações</option>';
+      lSet.forEach(l=> { const opt=document.createElement('option'); opt.value=l; opt.textContent=l; filterLocation.appendChild(opt); });
+    }
+    refreshSuppliersLocations();
+
+    // attach open/edit/log for initial rows (renderTable handles dynamic binding)
+    renderKPIs(products);
+    updateCharts(products);
+
+    // populate initial filters values: categories, suppliers, locations already done in populateFilters & refreshSuppliersLocations
+
+    // small UX: clicking a row SKU opens edit
+    // done via btn-edit above
+
+  </script>
+</body>
+</html>

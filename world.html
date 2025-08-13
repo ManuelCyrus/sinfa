@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Farmácia — Relatórios</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Quill editor -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    .thead-sticky th { position: sticky; top: 0; background: white; z-index: 10; }
+    .report-area { min-height: 220px; }
+    /* small print friendly adjustments */
+    @media print {
+      body * { visibility: hidden; }
+      #printable, #printable * { visibility: visible; }
+      #printable { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- TOP -->
+  <header class="bg-white shadow sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-file-alt text-2xl text-indigo-600"></i>
+        <div>
+          <div class="text-lg font-semibold">Relatórios — ERP Farmácia</div>
+          <div class="text-xs text-gray-500">Gere e exporte relatórios financeiros, de vendas e estoque</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="btnExportCSVTop" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm"><i class="fas fa-file-csv mr-2"></i>CSV</button>
+        <button id="btnPrintTop" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm"><i class="fas fa-print mr-2"></i>Imprimir / PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+    <!-- LEFT: Controls -->
+    <aside class="lg:col-span-1 bg-white p-4 rounded shadow h-fit">
+      <h3 class="text-sm font-semibold text-gray-700 mb-3">Selecionar Relatório</h3>
+
+      <select id="reportType" class="w-full border rounded px-3 py-2 mb-3">
+        <option value="sales_period">Vendas por Período (detalhado)</option>
+        <option value="profit_category">Lucro por Categoria</option>
+        <option value="stock_critical">Estoque Crítico & Vencimentos</option>
+        <option value="purchases_vs_sales">Comparativo Compras x Vendas</option>
+        <option value="suppliers_leadtime">Fornecedores — Prazos e Entregas</option>
+        <option value="prescriptions">Prescrições Atendidas</option>
+        <option value="top_customers">Top Clientes</option>
+      </select>
+
+      <h4 class="text-xs font-semibold text-gray-500 mt-2">Período</h4>
+      <div class="flex gap-2 mb-3">
+        <input id="startDate" type="date" class="border rounded px-2 py-1 w-1/2" />
+        <input id="endDate" type="date" class="border rounded px-2 py-1 w-1/2" />
+      </div>
+
+      <h4 class="text-xs font-semibold text-gray-500">Filtros</h4>
+      <select id="filterCategory" class="w-full border rounded px-3 py-2 mb-2">
+        <option value="">Todas as categorias</option>
+        <option>Analgésicos</option><option>Antibióticos</option><option>Vitaminas</option><option>Higiene</option>
+      </select>
+      <select id="filterSupplier" class="w-full border rounded px-3 py-2 mb-2">
+        <option value="">Todos os fornecedores</option>
+        <option>MedFarma</option><option>BioPharma</option><option>LabX</option>
+      </select>
+      <select id="filterStatus" class="w-full border rounded px-3 py-2 mb-3">
+        <option value="">Todos status</option><option value="low">Estoque baixo</option><option value="expiring">Vencendo</option>
+      </select>
+
+      <h4 class="text-xs font-semibold text-gray-500">Opções</h4>
+      <div class="flex flex-col gap-2 mb-3">
+        <label class="flex items-center gap-2 text-sm"><input id="optShowCharts" type="checkbox" checked /> Mostrar gráficos</label>
+        <label class="flex items-center gap-2 text-sm"><input id="optIncludeZero" type="checkbox" /> Incluir itens sem movimento</label>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btnGenerate" class="bg-indigo-600 text-white px-4 py-2 rounded flex-1 hover:bg-indigo-700"><i class="fas fa-play mr-2"></i>Gerar</button>
+        <button id="btnPreview" class="bg-white border px-4 py-2 rounded hover:bg-gray-50" title="Pré-visualizar relatório"><i class="fas fa-eye mr-2"></i>Prévia</button>
+      </div>
+
+      <hr class="my-4" />
+
+      <h4 class="text-sm font-semibold text-gray-700">Ações Rápidas</h4>
+      <div class="flex flex-col gap-2 mt-2">
+        <button id="btnExportCSV" class="bg-green-50 text-green-700 border px-3 py-2 rounded text-sm"><i class="fas fa-file-csv mr-2"></i>Exportar CSV</button>
+        <button id="btnSendEmail" class="bg-blue-50 text-blue-700 border px-3 py-2 rounded text-sm"><i class="fas fa-paper-plane mr-2"></i>Enviar por e-mail</button>
+        <button id="btnSchedule" class="bg-yellow-50 text-yellow-800 border px-3 py-2 rounded text-sm"><i class="fas fa-calendar-plus mr-2"></i>Agendar envio</button>
+      </div>
+    </aside>
+
+    <!-- CENTER / RIGHT: Output -->
+    <section class="lg:col-span-3 space-y-4">
+
+      <!-- Summary cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Relatório selecionado</div>
+          <div id="summaryReport" class="text-lg font-semibold">Vendas por Período</div>
+          <div class="text-xs text-gray-400">Configuração atual do relatório</div>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Intervalo</div>
+          <div id="summaryRange" class="text-lg font-semibold">—</div>
+          <div class="text-xs text-gray-400">Período aplicado</div>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Itens no resultado</div>
+          <div id="summaryCount" class="text-lg font-semibold">0</div>
+          <div class="text-xs text-gray-400">Linhas retornadas</div>
+        </div>
+      </div>
+
+      <!-- Report area -->
+      <div id="printable" class="bg-white p-4 rounded shadow report-area">
+        <!-- header -->
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h2 id="reportTitle" class="text-xl font-semibold">Relatório</h2>
+            <div id="reportMeta" class="text-xs text-gray-500">Geração automática</div>
+          </div>
+          <div class="text-right text-xs text-gray-400">
+            <div>Usuário: Manuel Fulama</div>
+            <div id="reportDate">—</div>
+          </div>
+        </div>
+
+        <!-- Editor -->
+        <div class="mb-4">
+          <div id="editor" class="h-40 bg-white border rounded"></div>
+        </div>
+
+        <!-- Charts -->
+        <div id="chartsWrap" class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 hidden">
+          <div class="bg-white p-3 rounded shadow">
+            <div class="font-semibold text-sm mb-2">Gráfico 1</div>
+            <canvas id="chartA" height="160"></canvas>
+          </div>
+          <div class="bg-white p-3 rounded shadow">
+            <div class="font-semibold text-sm mb-2">Gráfico 2</div>
+            <canvas id="chartB" height="160"></canvas>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-auto">
+          <table id="reportTable" class="min-w-full text-sm">
+            <thead class="thead-sticky bg-gray-50">
+              <tr id="reportHead"></tr>
+            </thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Footer actions -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex gap-2">
+          <button id="btnExportCSVBottom" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><i class="fas fa-file-csv mr-2"></i>Exportar CSV</button>
+          <button id="btnPrintBottom" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"><i class="fas fa-print mr-2"></i>Imprimir / PDF</button>
+        </div>
+
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+          <div>Formato do relatório:</div>
+          <select id="reportFormat" class="border rounded px-2 py-1">
+            <option value="summary">Sumário</option>
+            <option value="detailed">Detalhado</option>
+            <option value="pivot">Pivot (export)</option>
+          </select>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Modais simples -->
+  <div id="modalSchedule" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded shadow p-4 w-full max-w-md">
+      <h3 class="font-semibold mb-2">Agendar envio do relatório</h3>
+      <label class="text-xs text-gray-500">Enviar para (e-mail)</label>
+      <input id="scheduleEmail" class="w-full border rounded px-3 py-2 mb-2" placeholder="financeiro@farmacia.com" />
+      <label class="text-xs text-gray-500">Repetir</label>
+      <select id="scheduleRepeat" class="w-full border rounded px-3 py-2 mb-3">
+        <option value="daily">Diariamente</option><option value="weekly">Semanal</option><option value="monthly">Mensal</option>
+      </select>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModal('modalSchedule')" class="px-3 py-1 border rounded">Cancelar</button>
+        <button onclick="confirmSchedule()" class="px-3 py-1 bg-green-600 text-white rounded">Agendar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // --- inicialização do editor ---
+    const quill = new Quill('#editor', { theme: 'snow', placeholder: 'Texto do relatório — você pode editar antes de exportar.' });
+
+    // --- helpers ---
+    const money = v => 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+    const nowStr = () => new Date().toLocaleString('pt-BR');
+
+    // demo data generator
+    function genDummySales(days=30){
+      const labels = [];
+      const data = [];
+      for(let i=days-1;i>=0;i--){
+        const d = new Date(); d.setDate(d.getDate()-i);
+        labels.push(d.toISOString().slice(0,10));
+        data.push(Math.floor(800 + Math.random()*2200));
+      }
+      return { labels, data };
+    }
+
+    function genTopProducts(){
+      return [
+        { produto:'Dipirona 500mg', qty: 420, valor: 2100 },
+        { produto:'Paracetamol 500mg', qty: 360, valor: 2160 },
+        { produto:'Ibuprofeno 200mg', qty: 240, valor: 1680 },
+        { produto:'Vitamina C 500mg', qty: 180, valor: 900 },
+      ];
+    }
+
+    function genStockCritical(){
+      return [
+        { sku:'MED102', produto:'Amoxicilina 500mg', fornecedor:'BioPharma', qty: 8, min: 20, validade:'2024-09-10' },
+        { sku:'MED221', produto:'Loratadina 10mg', fornecedor:'MedFarma', qty: 3, min: 10, validade:'2024-07-15' },
+        { sku:'MED305', produto:'Omeprazol 20mg', fornecedor:'LabX', qty: 0, min: 5, validade:'2023-12-01' },
+      ];
+    }
+
+    // chart instances
+    let chartA = null, chartB = null;
+
+    // elements
+    const reportType = document.getElementById('reportType');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSupplier = document.getElementById('filterSupplier');
+    const filterStatus = document.getElementById('filterStatus');
+    const optShowCharts = document.getElementById('optShowCharts');
+    const optIncludeZero = document.getElementById('optIncludeZero');
+
+    const reportTitle = document.getElementById('reportTitle');
+    const reportMeta = document.getElementById('reportMeta');
+    const reportDate = document.getElementById('reportDate');
+    const reportHead = document.getElementById('reportHead');
+    const reportBody = document.getElementById('reportBody');
+    const chartsWrap = document.getElementById('chartsWrap');
+    const summaryReport = document.getElementById('summaryReport');
+    const summaryRange = document.getElementById('summaryRange');
+    const summaryCount = document.getElementById('summaryCount');
+
+    // generate button
+    document.getElementById('btnGenerate').addEventListener('click', generateReport);
+    document.getElementById('btnPreview').addEventListener('click', previewReport);
+    document.getElementById('btnExportCSV').addEventListener('click', ()=> exportCSV(currentData));
+    document.getElementById('btnExportCSVTop').addEventListener('click', ()=> exportCSV(currentData));
+    document.getElementById('btnExportCSVBottom').addEventListener('click', ()=> exportCSV(currentData));
+    document.getElementById('btnPrintTop').addEventListener('click', ()=> window.print());
+    document.getElementById('btnPrintBottom').addEventListener('click', ()=> window.print());
+    document.getElementById('btnSendEmail').addEventListener('click', sendEmailSim);
+    document.getElementById('btnSchedule').addEventListener('click', ()=> openModal('modalSchedule'));
+    document.getElementById('btnExportCSVTop').addEventListener('click', ()=> exportCSV(currentData));
+
+    let currentData = []; // data currently displayed (array of objects)
+
+    function generateReport(){
+      const type = reportType.value;
+      const showCharts = optShowCharts.checked;
+      const start = startDate.value || '—';
+      const end = endDate.value || '—';
+      summaryReport.textContent = document.querySelector(`#reportType option[value="${type}"]`).textContent;
+      summaryRange.textContent = `${start} → ${end}`;
+      reportDate.textContent = nowStr();
+
+      // reset editor brief
+      quill.setText('');
+
+      // switch by type
+      if (type === 'sales_period'){
+        reportTitle.textContent = 'Vendas por Período (detalhado)';
+        reportMeta.textContent = `Período: ${start} → ${end} • Categoria: ${filterCategory.value || 'Todas'}`;
+        const sales = genDummySales(30);
+        currentData = sales.labels.map((d,i)=> ({ data:d, vendas:sales.data[i], transacoes: Math.floor(sales.data[i]/100) }) );
+        fillTable(['Data','Vendas (R$)','Transações'], currentData.map(r=> [r.data, r.vendas, r.transacoes]));
+        quill.setText(`Relatório de Vendas\nPeríodo: ${start} → ${end}\nTotal estimado: ${currentData.reduce((s,x)=>s+x.vendas,0)} R$`);
+        renderChartsSales(sales, genTopProducts());
+      }
+
+      else if (type === 'profit_category'){
+        reportTitle.textContent = 'Lucro por Categoria';
+        reportMeta.textContent = `Categorias filtradas: ${filterCategory.value || 'Todas'}`;
+        // dummy categories
+        const cats = ['Analgésicos','Antibióticos','Vitaminas','Higiene'];
+        currentData = cats.map(c => ({ categoria:c, vendas: Math.floor(2000+Math.random()*8000), custo: Math.floor(1000+Math.random()*4000) }));
+        fillTable(['Categoria','Vendas (R$)','Custo (R$)','Lucro (R$)'], currentData.map(r=> [r.categoria, r.vendas, r.custo, r.vendas - r.custo]));
+        quill.setText('Lucro por Categoria — resumo executivo.\nInclui margem e tendências.');
+        renderChartsProfitCategory(currentData);
+      }
+
+      else if (type === 'stock_critical'){
+        reportTitle.textContent = 'Estoque Crítico & Vencimentos';
+        reportMeta.textContent = `Filtrado por fornecedor: ${filterSupplier.value || 'Todos'}`;
+        currentData = genStockCritical();
+        fillTable(['SKU','Produto','Fornecedor','Qtd','Min','Validade'], currentData.map(r=> [r.sku, r.produto, r.fornecedor, r.qty, r.min, r.validade]));
+        quill.setText('Produtos com estoque crítico — ação recomendada: reordenar.');
+        toggleCharts(false);
+      }
+
+      else if (type === 'purchases_vs_sales'){
+        reportTitle.textContent = 'Comparativo: Compras x Vendas';
+        reportMeta.textContent = `Período: ${start} → ${end}`;
+        // dummy
+        const labels = ['Jan','Fev','Mar','Apr','Mai','Jun'];
+        const compras = labels.map(()=> Math.floor(2000+Math.random()*3000));
+        const vendas = labels.map(()=> Math.floor(2500+Math.random()*3500));
+        currentData = labels.map((lbl,i)=> ({ periodo:lbl, compras:compras[i], vendas:vendas[i] }));
+        fillTable(['Período','Compras (R$)','Vendas (R$)','Saldo (R$)'], currentData.map(r=> [r.periodo, r.compras, r.vendas, r.vendas - r.compras]));
+        quill.setText('Comparativo entre compras e vendas para avaliar margem e rotação de stock.');
+        renderChartsPurchasesVsSales(labels, compras, vendas);
+      }
+
+      else if (type === 'suppliers_leadtime'){
+        reportTitle.textContent = 'Fornecedores — Prazos de Entrega';
+        reportMeta.textContent = 'Análise do lead time médio por fornecedor';
+        currentData = [
+          { fornecedor:'MedFarma', ultimoPedido: '2024-06-20', leadtime: 5 },
+          { fornecedor:'BioPharma', ultimoPedido: '2024-06-15', leadtime: 12 },
+          { fornecedor:'LabX', ultimoPedido: '2024-06-02', leadtime: 7 }
+        ];
+        fillTable(['Fornecedor','Últ. Pedido','Lead time (dias)'], currentData.map(r=> [r.fornecedor, r.ultimoPedido, r.leadtime]));
+        quill.setText('Avaliação de performance dos fornecedores (lead times e histórico).');
+        toggleCharts(false);
+      }
+
+      else if (type === 'prescriptions'){
+        reportTitle.textContent = 'Prescrições Atendidas';
+        reportMeta.textContent = `Período: ${start} → ${end}`;
+        currentData = [
+          { receita:'R001', paciente:'João Silva', data:'2024-06-19', itens:3, valor:120 },
+          { receita:'R002', paciente:'Ana Costa', data:'2024-06-20', itens:2, valor:45 },
+        ];
+        fillTable(['Receita','Paciente','Data','Itens','Valor (R$)'], currentData.map(r=> [r.receita, r.paciente, r.data, r.itens, r.valor]));
+        quill.setText('Relatório de prescrições atendidas, útil para auditoria farmacêutica.');
+        toggleCharts(false);
+      }
+
+      else if (type === 'top_customers'){
+        reportTitle.textContent = 'Top Clientes';
+        reportMeta.textContent = `Top clientes por faturamento`;
+        currentData = [
+          { cliente:'Farmacia X', faturamento: 12500 },
+          { cliente:'João Silva', faturamento: 4200 },
+          { cliente:'Clínica Y', faturamento: 3700 }
+        ];
+        fillTable(['Cliente','Faturamento (R$)'], currentData.map(r=> [r.cliente, r.faturamento]));
+        quill.setText('Clientes com maior faturamento no período — indicações para fidelização.');
+        renderChartsTopCustomers(currentData);
+      }
+
+      // update summary count
+      summaryCount.textContent = currentData.length;
+      // show/hide charts area
+      toggleCharts(optShowCharts.checked);
+    }
+
+    // rendering helpers
+    function fillTable(headers=[], rows=[]){
+      reportHead.innerHTML = '';
+      reportBody.innerHTML = '';
+      headers.forEach(h=>{
+        const th = document.createElement('th'); th.className='p-2 text-left border-b'; th.textContent = h; reportHead.appendChild(th);
+      });
+      rows.forEach(r=>{
+        const tr = document.createElement('tr');
+        r.forEach(c=> {
+          const td = document.createElement('td'); td.className='p-2 border-b text-sm'; td.textContent = c; tr.appendChild(td);
+        });
+        reportBody.appendChild(tr);
+      });
+    }
+
+    function toggleCharts(show){
+      chartsWrap.classList.toggle('hidden', !show);
+    }
+
+    // chart renderers
+    function renderChartsSales(sales, topProducts){
+      // chart A: vendas por dia (bar)
+      if (chartA) chartA.destroy();
+      const ctxA = document.getElementById('chartA').getContext('2d');
+      chartA = new Chart(ctxA, {
+        type: 'bar',
+        data: { labels: sales.labels, datasets: [{ label: 'Vendas (R$)', data: sales.data, backgroundColor: '#3b82f6' }] },
+        options: { responsive:true, scales: { y:{ beginAtZero:true } } }
+      });
+
+      // chart B: top products (doughnut)
+      if (chartB) chartB.destroy();
+      const ctxB = document.getElementById('chartB').getContext('2d');
+      chartB = new Chart(ctxB, {
+        type: 'doughnut',
+        data: { labels: topProducts.map(p=>p.produto), datasets: [{ data: topProducts.map(p=>p.qty), backgroundColor: ['#60A5FA','#34D399','#F59E0B','#A78BFA'] }]},
+        options:{ responsive:true, plugins:{ legend:{ position:'bottom' } } }
+      });
+    }
+
+    function renderChartsProfitCategory(data){
+      if (chartA) chartA.destroy();
+      const ctxA = document.getElementById('chartA').getContext('2d');
+      chartA = new Chart(ctxA, { type: 'bar', data: { labels: data.map(d=>d.categoria), datasets:[{ label:'Lucro (R$)', data: data.map(d=>d.vendas - d.custo), backgroundColor:'#10b981' }]}, options:{ responsive:true } });
+
+      if (chartB) chartB.destroy();
+      const ctxB = document.getElementById('chartB').getContext('2d');
+      chartB = new Chart(ctxB, { type: 'pie', data: { labels: data.map(d=>d.categoria), datasets:[{ data: data.map(d=>d.vendas), backgroundColor:['#60A5FA','#34D399','#F59E0B','#A78BFA'] }]}, options:{ responsive:true } });
+    }
+
+    function renderChartsPurchasesVsSales(labels, compras, vendas){
+      if (chartA) chartA.destroy();
+      const ctxA = document.getElementById('chartA').getContext('2d');
+      chartA = new Chart(ctxA, { type:'line', data:{ labels, datasets:[{ label:'Compras', data:compras, borderColor:'#f97316', fill:false },{ label:'Vendas', data:vendas, borderColor:'#3b82f6', fill:false }]}, options:{ responsive:true } });
+
+      if (chartB) chartB.destroy();
+      const ctxB = document.getElementById('chartB').getContext('2d');
+      chartB = new Chart(ctxB, { type:'bar', data:{ labels, datasets:[{ label:'Saldo (Vendas-Compras)', data: vendas.map((v,i)=> v - compras[i]), backgroundColor:'#818CF8' }] }, options:{ responsive:true }});
+    }
+
+    function renderChartsTopCustomers(data){
+      if (chartA) chartA.destroy();
+      const ctxA = document.getElementById('chartA').getContext('2d');
+      chartA = new Chart(ctxA, { type:'bar', data:{ labels: data.map(d=>d.cliente), datasets:[{ label:'Faturamento', data:data.map(d=>d.faturamento), backgroundColor:'#6366F1' }]}, options:{ responsive:true }});
+
+      if (chartB) chartB.destroy();
+      const ctxB = document.getElementById('chartB').getContext('2d');
+      chartB = new Chart(ctxB, { type:'doughnut', data:{ labels:data.map(d=>d.cliente), datasets:[{ data:data.map(d=>d.faturamento), backgroundColor:['#60A5FA','#34D399','#F59E0B'] }]}, options:{ responsive:true }});
+    }
+
+    // preview modal (simple behavior: open printable section in new window)
+    function previewReport(){
+      window.print();
+    }
+
+    // CSV export utility
+    function exportCSV(data){
+      if (!data || data.length === 0) return alert('Nenhum dado para exportar.');
+      // if data is array of simple objects, build header from keys or use visible table
+      const rows = [];
+      // prefer using table DOM
+      const headers = Array.from(reportHead.querySelectorAll('th')).map(h=>h.textContent.trim());
+      rows.push(headers);
+      Array.from(reportBody.querySelectorAll('tr')).forEach(tr=>{
+        const cols = Array.from(tr.querySelectorAll('td')).map(td=> td.textContent.trim().replace(/\s+/g,' '));
+        rows.push(cols);
+      });
+      const csv = rows.map(r => r.map(c=> `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `relatorio_${reportType.value}_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(url);
+    }
+
+    // simulated email send
+    function sendEmailSim(){
+      const email = prompt('Enviar relatório para (digite e-mail):', 'financeiro@farmacia.com');
+      if (!email) return;
+      // pretend to send
+      alert(`Relatório enviado para ${email} (simulação).`);
+    }
+
+    // scheduling modal
+    function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+    function confirmSchedule(){
+      const email = document.getElementById('scheduleEmail').value || 'financeiro@farmacia.com';
+      const r = document.getElementById('scheduleRepeat').value;
+      closeModal('modalSchedule');
+      alert(`Agendado envio para ${email} — ${r} (simulação).`);
+    }
+
+    // quick: set default last 30 days
+    (function setDefaults(){
+      const end = new Date(); const start = new Date(); start.setDate(end.getDate()-29);
+      endDate.value = end.toISOString().slice(0,10);
+      startDate.value = start.toISOString().slice(0,10);
+      reportDate.textContent = nowStr();
+    })();
+
+    // open schedule modal
+    document.getElementById('btnSchedule').addEventListener('click', ()=> openModal('modalSchedule'));
+
+    // initial generate
+    generateReport();
+  </script>
+
+</body>
+</html>

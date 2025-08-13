@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDV - Farmácia</title>
+
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="./output.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow">
+    <div class="flex items-center gap-4">
+      <i class="fas fa-store text-2xl"></i>
+      <span class="text-xl font-bold">PDV Farmácia</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <i class="fas fa-user-circle text-xl"></i>
+      <span>Amnuel Fulama</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="flex min-h-screen">
+<aside class="w-64 bg-white shadow-md p-4 space-y-6">
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Geral</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-home"></i> Dashboard
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Cadastros</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-user-plus"></i> Clientes
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-users-cog"></i> Funcionários
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-truck"></i> Fornecedores
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-pills"></i> Produtos
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Movimentações</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cart-plus"></i> Compras
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cash-register"></i> Vendas
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-undo"></i> Devoluções
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Financeiro</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-file-invoice-dollar"></i> Contas a pagar
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-hand-holding-usd"></i> Contas a receber
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cash-register"></i> Caixa
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Relatórios</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-chart-line"></i> Vendas por período
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-boxes"></i> Estoque
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-receipt"></i> Financeiro
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <h2 class="text-gray-500 uppercase text-xs font-bold mb-2">Configurações</h2>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-user-cog"></i> Usuários
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-lock"></i> Permissões
+      </li>
+      <li class="flex items-center gap-2 hover:bg-blue-100 p-2 rounded cursor-pointer">
+        <i class="fas fa-cogs"></i> Sistema
+      </li>
+    </ul>
+  </div>
+</aside>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 p-6">
+      <h1 class="text-2xl font-bold mb-4">Bem-vindo ao Sistema PDV</h1>
+      
+
+
+      <main class="flex-1 p-6">
+  
+
+<main class="flex-1 p-6">
+  <h1 class="text-2xl font-bold mb-4">Venda de Medicamentos</h1>
+
+  <!-- Campo de busca -->
+  <div class="flex gap-2 mb-4">
+    <input type="text" placeholder="Buscar medicamento ou escanear QR code" class="flex-1 border border-gray-300 rounded p-2" id="searchInput">
+    <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <i class="fas fa-qrcode"></i>
+    </button>
+  </div>
+
+  <!-- Lista de itens da venda -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border rounded shadow mb-6">
+      <thead class="bg-gray-100 text-left">
+        <tr>
+          <th class="p-2 border-b">#</th>
+          <th class="p-2 border-b">Medicamento</th>
+          <th class="p-2 border-b">Qtd</th>
+          <th class="p-2 border-b">Preço Unitário (R$)</th>
+          <th class="p-2 border-b">Total (R$)</th>
+          <th class="p-2 border-b">Ação</th>
+        </tr>
+      </thead>
+      <tbody id="cartItems">
+        
+        
+        <tr>
+          <td class="p-2 border-b">1</td>
+          <td class="p-2 border-b">Dipirona 500mg</td>
+          <td class="p-2 border-b"><input type="number" value="1" class="w-16 border rounded p-1"></td>
+          <td class="p-2 border-b">5.00</td>
+          <td class="p-2 border-b">5.00</td>
+          <td class="p-2 border-b"><button class="text-red-600 hover:underline">Remover</button></td>
+        </tr>
+       
+        
+        <tr>
+          <td class="p-2 border-b">1</td>
+          <td class="p-2 border-b">Dipirona 500mg</td>
+          <td class="p-2 border-b"><input type="number" value="1" class="w-16 border rounded p-1"></td>
+          <td class="p-2 border-b">5.00</td>
+          <td class="p-2 border-b">5.00</td>
+          <td class="p-2 border-b"><button class="text-red-600 hover:underline">Remover</button></td>
+        </tr>
+       
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Total e ações -->
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="text-xl font-semibold">
+      Total: R$ <span id="totalValue">0.00</span>
+    </div>
+    <div class="flex gap-2">
+      <button class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+        Finalizar Venda
+      </button>
+      <button class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</main>
+
+
+</main>
+
+      
+
+
+
+    </main>
+  </div>
+
+</body>
+</html>

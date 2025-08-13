@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Farmácia — Dashboard & Comparador</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    .thead-sticky th { position: sticky; top: 0; background: white; z-index: 5; }
+    .status-badge { font-size: .72rem; padding: .2rem .5rem; border-radius: .35rem; }
+    .table-scroll { max-height: 52vh; overflow:auto; }
+    @media print { .no-print { display:none!important } }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 font-sans">
+
+  <!-- TOPBAR -->
+  <header class="bg-white shadow sticky top-0 z-50 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-clinic-medical text-2xl text-indigo-600"></i>
+        <div>
+          <div class="text-lg font-semibold">ERP Farmácia</div>
+          <div class="text-xs text-gray-500">Controle de estoque · Vendas · Relatórios</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center bg-gray-50 border rounded px-2 py-1 gap-2">
+          <i class="fas fa-search text-gray-400"></i>
+          <input id="globalSearch" placeholder="Pesquisar por nome, SKU, fornecedor..." class="bg-transparent focus:outline-none text-sm" />
+        </div>
+
+        <button id="exportCSV" class="px-3 py-1 border rounded bg-white hover:bg-gray-50 text-sm"><i class="fas fa-file-csv mr-2"></i>Exportar</button>
+        <button id="printBtn" class="px-3 py-1 border rounded bg-white hover:bg-gray-50 text-sm"><i class="fas fa-print mr-2"></i>Imprimir</button>
+
+        <div class="relative">
+          <button id="userBtn" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-50">
+            <i class="fas fa-user-circle text-2xl text-gray-600"></i>
+            <div class="hidden sm:block text-sm text-left">
+              <div class="font-medium">Manuel Fulama</div>
+              <div class="text-xs text-gray-500">Administrador</div>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </button>
+          <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg no-print">
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fas fa-user mr-2"></i> Perfil</a>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fas fa-cog mr-2"></i> Definições</a>
+            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- SIDEBAR -->
+    <aside class="lg:col-span-3 bg-white rounded shadow p-4 h-fit sticky top-24">
+      <div class="text-xs text-gray-400 uppercase font-semibold mb-3">Navegação</div>
+      <ul class="space-y-2 text-sm">
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-chart-line text-indigo-500 w-5"></i> Dashboard</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-boxes text-indigo-500 w-5"></i> Produtos</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-file-invoice-dollar text-indigo-500 w-5"></i> Financeiro</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-users text-indigo-500 w-5"></i> Clientes</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-truck text-indigo-500 w-5"></i> Fornecedores</li>
+      </ul>
+
+      <hr class="my-4" />
+
+      <div class="text-xs text-gray-400 uppercase font-semibold mb-3">Filtros Rápidos</div>
+      <div class="flex flex-col gap-2 text-sm">
+        <label class="text-xs text-gray-500">Categoria</label>
+        <select id="filterCategory" class="border rounded px-2 py-1">
+          <option value="">Todas</option>
+        </select>
+
+        <label class="text-xs text-gray-500">Fornecedor</label>
+        <select id="filterSupplier" class="border rounded px-2 py-1">
+          <option value="">Todos</option>
+        </select>
+
+        <label class="text-xs text-gray-500">Período</label>
+        <input id="dateFrom" type="date" class="border rounded px-2 py-1" />
+        <input id="dateTo" type="date" class="border rounded px-2 py-1" />
+
+        <button id="btnApplyFilters" class="mt-2 bg-indigo-600 text-white px-3 py-2 rounded">Aplicar</button>
+        <button id="btnClearFilters" class="mt-1 border px-3 py-2 rounded">Limpar filtros</button>
+      </div>
+
+      <hr class="my-4" />
+      <div class="text-xs text-gray-400 uppercase font-semibold mb-2">Ações Rápidas</div>
+      <div class="grid gap-2">
+        <button id="btnNewProduct" class="bg-green-600 text-white px-3 py-2 rounded text-sm"><i class="fas fa-plus mr-2"></i>Novo produto</button>
+        <button id="btnReorderAll" class="bg-yellow-50 text-yellow-800 px-3 py-2 rounded text-sm"><i class="fas fa-shopping-cart mr-2"></i>Reordenar</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="lg:col-span-9 space-y-6">
+
+      <!-- KPIs -->
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Vendas (período)</div>
+          <div id="kSales" class="text-2xl font-bold text-indigo-600">R$ 0,00</div>
+          <div class="text-xs text-gray-400">Receita total no intervalo</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Ticket Médio</div>
+          <div id="kTicket" class="text-2xl font-bold text-green-600">R$ 0,00</div>
+          <div class="text-xs text-gray-400">Receita / nº vendas</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Valor em Stock</div>
+          <div id="kStockValue" class="text-2xl font-bold text-teal-600">R$ 0,00</div>
+          <div class="text-xs text-gray-400">Custo total estimado</div>
+        </div>
+
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Itens Críticos</div>
+          <div id="kCritical" class="text-2xl font-bold text-red-600">0</div>
+          <div class="text-xs text-gray-400">Baixo estoque / vencidos</div>
+        </div>
+      </section>
+
+      <!-- Comparador: seleção múltipla -->
+      <section class="bg-white p-4 rounded shadow">
+        <div class="flex flex-col lg:flex-row gap-4 items-end">
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div>
+              <label class="text-xs text-gray-500">Selecionar Produtos (até 4)</label>
+              <select id="selectProducts" multiple class="border rounded h-32 p-2 text-sm"></select>
+              <div class="text-xs text-gray-400 mt-1">CTRL/CMD + clique para selecionar múltiplos</div>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500">Comparar por</label>
+              <select id="compareBy" class="border rounded px-2 py-1">
+                <option value="qty">Quantidade vendida</option>
+                <option value="revenue">Receita</option>
+                <option value="profit">Lucro</option>
+                <option value="margin">Margem (%)</option>
+                <option value="price">Preço de venda</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500">Intervalo</label>
+              <div class="flex gap-2">
+                <input id="compFrom" type="date" class="border rounded px-2 py-1" />
+                <input id="compTo" type="date" class="border rounded px-2 py-1" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button id="btnCompare" class="bg-indigo-600 text-white px-4 py-2 rounded">Comparar</button>
+            <button id="btnClearCompare" class="border px-4 py-2 rounded">Limpar</button>
+          </div>
+        </div>
+
+        <!-- Charts area -->
+        <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="bg-white p-3 rounded shadow">
+            <div class="flex items-center justify-between">
+              <div class="font-semibold">Comparativo (unidades vs lucro)</div>
+              <div class="text-xs text-gray-500" id="compareMeta">—</div>
+            </div>
+            <canvas id="compareChart" height="220"></canvas>
+          </div>
+
+          <div class="bg-white p-3 rounded shadow">
+            <div class="font-semibold mb-2">Tabela Comparativa Resumida</div>
+            <div class="overflow-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 thead-sticky">
+                  <tr>
+                    <th class="p-2 text-left">Produto</th>
+                    <th class="p-2 text-right">Qtd</th>
+                    <th class="p-2 text-right">Receita</th>
+                    <th class="p-2 text-right">Lucro</th>
+                    <th class="p-2 text-right">Margem %</th>
+                    <th class="p-2 text-right">Variação %</th>
+                  </tr>
+                </thead>
+                <tbody id="compareTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Produtos (ERP table detalhado) -->
+      <section class="bg-white p-4 rounded shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <div class="text-sm font-semibold">Produtos</div>
+            <div class="text-xs text-gray-400">Lista completa com métricas</div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-gray-500">Mostrar</label>
+            <select id="perPage" class="border rounded px-2 py-1 text-sm">
+              <option>10</option><option>25</option><option>50</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-scroll border rounded">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-50 thead-sticky">
+              <tr>
+                <th class="p-2 border-b text-left">SKU</th>
+                <th class="p-2 border-b text-left">Produto</th>
+                <th class="p-2 border-b text-left hide-sm">Categoria</th>
+                <th class="p-2 border-b text-left">Fornecedor</th>
+                <th class="p-2 border-b text-right">Qtd</th>
+                <th class="p-2 border-b text-right hide-sm">Min</th>
+                <th class="p-2 border-b text-right">Custo</th>
+                <th class="p-2 border-b text-right">Preço</th>
+                <th class="p-2 border-b text-right">Valor stock</th>
+                <th class="p-2 border-b text-left">Validade</th>
+                <th class="p-2 border-b text-left">Status</th>
+                <th class="p-2 border-b text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-xs text-gray-500 p-4 no-print">
+    &copy; 2025 ERP Farmácia — Sistema demo. bla blaaaaa.
+  </footer>
+
+  <!-- MODAL: Visualizar produto -->
+  <div id="modalProduct" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded w-full max-w-2xl p-4">
+      <div class="flex justify-between items-start gap-4">
+        <div>
+          <h3 id="modalTitle" class="text-lg font-semibold">Produto</h3>
+          <div id="modalSKU" class="text-sm text-gray-500">SKU: —</div>
+        </div>
+        <button onclick="closeModal('modalProduct')" class="text-gray-500">✖</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="col-span-1">
+          <img id="modalImage" src="" alt="imagem" class="w-full h-40 object-contain border rounded" />
+        </div>
+        <div class="col-span-2">
+          <div id="modalDesc" class="text-sm text-gray-700"></div>
+          <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+            <div><b>Fornecedor:</b> <span id="modalSupplier"></span></div>
+            <div><b>Localização:</b> <span id="modalLocation"></span></div>
+            <div><b>Qtd:</b> <span id="modalQty"></span></div>
+            <div><b>Validade:</b> <span id="modalExpiry"></span></div>
+            <div><b>Custo:</b> <span id="modalCost"></span></div>
+            <div><b>Preço:</b> <span id="modalPrice"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end gap-2">
+        <button class="px-3 py-1 border rounded" onclick="closeModal('modalProduct')">Fechar</button>
+        <button class="px-3 py-1 bg-green-600 text-white rounded" id="modalReorderBtn">Repor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    /**********************************************************************
+     * Demo ERP completo (front-end only). Replace dummy data with API calls.
+     * Features:
+     * - KPIs recomputed by filters
+     * - Compare up to 4 products by qty/revenue/profit/margin
+     * - Combined chart (bar: qty, line: profit)
+     * - Table with product details and status (vencimento/baixo)
+     * - Export CSV and print
+     **********************************************************************/
+
+    // ----------------------------
+    // Dummy data (replace with fetch from API)
+    // ----------------------------
+    const categories = ['Analgésico','Antibiótico','Vitaminas','Higiene','Dermocosmético'];
+    const suppliers = ['MedFarma','BioPharma','LabX','SaudeDistrib'];
+    const locations = ['Prateleira A1','Prateleira B3','Armazém','Frio'];
+
+    // create dummy products + sales history for each product
+    const products = [];
+    const salesHistory = {}; // productId -> {date: qty}
+    const today = new Date();
+
+    const baseNames = ['Dipirona','Paracetamol','Ibuprofeno','Amoxicilina','Vitamina C','Omeprazol','Losartana','Cetirizina'];
+    for (let i=1;i<=30;i++){
+      const id = 'SKU' + (1000+i);
+      const name = baseNames[i % baseNames.length] + (i%2 ? ' 500mg' : ' 250mg');
+      const category = categories[i % categories.length];
+      const supplier = suppliers[i % suppliers.length];
+      const location = locations[i % locations.length];
+      const min = Math.floor(Math.random()*20)+5;
+      const qty = Math.floor(Math.random()*200);
+      const cost = +((Math.random()*10)+1).toFixed(2);
+      const price = +(cost * (1 + (Math.random()*1.2))).toFixed(2);
+      const expiry = new Date(); expiry.setDate(today.getDate() + (Math.floor(Math.random()*720)-120));
+      const expiryStr = expiry.toISOString().slice(0,10);
+      const img = `https://via.placeholder.com/120?text=${encodeURIComponent(name.split(' ')[0])}`;
+
+      products.push({ id, name, category, supplier, location, qty, min, cost, price, expiry: expiryStr, image: img });
+
+      // generate random sales for last 180 days
+      salesHistory[id] = {};
+      for (let d=0; d<180; d++){
+        const dt = new Date(); dt.setDate(today.getDate() - d);
+        const key = dt.toISOString().slice(0,10);
+        salesHistory[id][key] = Math.floor(Math.random()*20); // unidades vendidas that day
+      }
+    }
+
+    // ----------------------------
+    // DOM refs
+    // ----------------------------
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSupplier = document.getElementById('filterSupplier');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    const btnApplyFilters = document.getElementById('btnApplyFilters');
+    const btnClearFilters = document.getElementById('btnClearFilters');
+    const globalSearch = document.getElementById('globalSearch');
+    const kSales = document.getElementById('kSales');
+    const kTicket = document.getElementById('kTicket');
+    const kStockValue = document.getElementById('kStockValue');
+    const kCritical = document.getElementById('kCritical');
+    const selectProducts = document.getElementById('selectProducts');
+    const compareBy = document.getElementById('compareBy');
+    const compFrom = document.getElementById('compFrom');
+    const compTo = document.getElementById('compTo');
+    const btnCompare = document.getElementById('btnCompare');
+    const btnClearCompare = document.getElementById('btnClearCompare');
+    const compareMeta = document.getElementById('compareMeta');
+    const compareTableBody = document.getElementById('compareTableBody');
+    const productsTbody = document.getElementById('productsTbody');
+    const exportCSVbtn = document.getElementById('exportCSV');
+    const printBtn = document.getElementById('printBtn');
+
+    // chart instances
+    let compareChart = null;
+
+    // ----------------------------
+    // Helpers
+    // ----------------------------
+    const money = v => 'R$ ' + Number(v).toFixed(2).replace('.',',');
+
+    function formatDate(d) {
+      return d.toISOString().slice(0,10);
+    }
+
+    function daysBetween(a,b){
+      return Math.round((new Date(b) - new Date(a)) / (24*3600*1000));
+    }
+
+    function computeStatus(p){
+      const expiry = new Date(p.expiry);
+      const days = Math.ceil((expiry - new Date())/(24*3600*1000));
+      if (days < 0) return { key:'expired', label:'Vencido', color:'red' };
+      if (days <= 30) return { key:'expiring', label:`Vencendo (${days}d)`, color:'orange' };
+      if (p.qty <= p.min) return { key:'low', label:'Baixo', color:'red' };
+      return { key:'ok', label:'OK', color:'green' };
+    }
+
+    // ----------------------------
+    // Populate filter selects + product multiselect
+    // ----------------------------
+    function populateSelectors(){
+      categories.forEach(c => {
+        const o = document.createElement('option'); o.value = c; o.textContent = c; filterCategory.appendChild(o);
+      });
+      suppliers.forEach(s => {
+        const o = document.createElement('option'); o.value = s; o.textContent = s; filterSupplier.appendChild(o);
+      });
+      products.forEach(p => {
+        const o = document.createElement('option'); o.value = p.id; o.textContent = `${p.name} — ${p.id}`; selectProducts.appendChild(o);
+      });
+    }
+    populateSelectors();
+
+    // ----------------------------
+    // Metrics computation (based on filters)
+    // - totalSales: sum revenue in selected period
+    // - ticketAverage: revenue / number sales (we simulate salesCount)
+    // - stockValue: sum(cost*qty)
+    // - criticalCount: count low/expired
+    // ----------------------------
+    function computeMetrics(filteredProducts, from, to){
+      let revenue = 0;
+      let salesCount = 0;
+      filteredProducts.forEach(p=>{
+        const history = salesHistory[p.id];
+        if (!history) return;
+        Object.keys(history).forEach(date => {
+          if ((!from || date >= from) && (!to || date <= to)){
+            const qty = history[date];
+            revenue += qty * p.price;
+            salesCount += qty;
+          }
+        });
+      });
+      const stockValue = filteredProducts.reduce((s,p)=> s + p.cost * p.qty, 0);
+      const critical = filteredProducts.filter(p => ['low','expiring','expired'].includes(computeStatus(p).key)).length;
+      return { revenue, salesCount, stockValue, critical };
+    }
+
+    // ----------------------------
+    // Render product table (ERP style)
+    // ----------------------------
+    function renderProductsTable(filteredProducts){
+      productsTbody.innerHTML = '';
+      filteredProducts.forEach(p=>{
+        const st = computeStatus(p);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 border-b font-medium">${p.id}</td>
+          <td class="p-2 border-b">
+            <div class="flex items-center gap-3">
+              <img src="${p.image}" alt="${p.name}" class="w-12 h-12 object-cover rounded" />
+              <div>
+                <div class="font-medium">${p.name}</div>
+                <div class="text-xs text-gray-500">${p.category}</div>
+              </div>
+            </div>
+          </td>
+          <td class="p-2 border-b hide-sm">${p.category}</td>
+          <td class="p-2 border-b">${p.supplier}</td>
+          <td class="p-2 border-b text-right ${st.key==='low' || st.key==='expired'?'text-red-600 font-semibold':''}">${p.qty}</td>
+          <td class="p-2 border-b text-right hide-sm">${p.min}</td>
+          <td class="p-2 border-b text-right">${money(p.cost)}</td>
+          <td class="p-2 border-b text-right">${money(p.price)}</td>
+          <td class="p-2 border-b text-right">${money(p.cost * p.qty)}</td>
+          <td class="p-2 border-b">${p.expiry}</td>
+          <td class="p-2 border-b">
+            <span class="status-badge ${st.color === 'green' ? 'bg-green-100 text-green-700' : st.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}">
+              ${st.label}
+            </span>
+          </td>
+          <td class="p-2 border-b text-right">
+            <div class="flex justify-end gap-2">
+              <button class="text-indigo-600 btn-view" data-id="${p.id}" title="Visualizar"><i class="fas fa-eye"></i></button>
+              <button class="text-green-600 btn-reorder" data-id="${p.id}" title="Repor"><i class="fas fa-shopping-cart"></i></button>
+            </div>
+          </td>
+        `;
+        productsTbody.appendChild(tr);
+      });
+
+      // bind view buttons
+      document.querySelectorAll('.btn-view').forEach(b => {
+        b.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id; openProductModal(id);
+        });
+      });
+      document.querySelectorAll('.btn-reorder').forEach(b => {
+        b.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          alert('Simulação: reordenar ' + id);
+        });
+      });
+    }
+
+    // ----------------------------
+    // Filter & initial rendering
+    // ----------------------------
+    function applyFilters(){
+      const cat = filterCategory.value;
+      const sup = filterSupplier.value;
+      const from = dateFrom.value;
+      const to = dateTo.value;
+      const q = (globalSearch.value || '').trim().toLowerCase();
+
+      let filtered = products.filter(p => {
+        if (cat && p.category !== cat) return false;
+        if (sup && p.supplier !== sup) return false;
+        if (q && !(p.id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || p.supplier.toLowerCase().includes(q))) return false;
+        return true;
+      });
+
+      // compute KPIs
+      const metrics = computeMetrics(filtered, from, to);
+      kSales.textContent = money(metrics.revenue);
+      kTicket.textContent = metrics.salesCount ? money(metrics.revenue / metrics.salesCount) : money(0);
+      kStockValue.textContent = money(metrics.stockValue);
+      kCritical.textContent = metrics.critical;
+
+      // render table
+      renderProductsTable(filtered);
+    }
+
+    // initial default dates (last 30 days)
+    (function setDefaults(){
+      const end = new Date(); const start = new Date(); start.setDate(end.getDate()-29);
+      dateTo.value = end.toISOString().slice(0,10);
+      dateFrom.value = start.toISOString().slice(0,10);
+      compTo.value = end.toISOString().slice(0,10);
+      compFrom.value = start.toISOString().slice(0,10);
+    })();
+
+    // attach filter events
+    btnApplyFilters.addEventListener('click', applyFilters);
+    btnClearFilters.addEventListener('click', () => {
+      filterCategory.value=''; filterSupplier.value=''; globalSearch.value=''; dateFrom.value=''; dateTo.value='';
+      applyFilters();
+    });
+    globalSearch.addEventListener('input', () => { setTimeout(applyFilters, 250); });
+
+    // initial fill of categories/suppliers from data (if not preset)
+    (function autofil() {
+      const cats = new Set(products.map(p => p.category));
+      const sups = new Set(products.map(p => p.supplier));
+      filterCategory.innerHTML = '<option value="">Todas</option>';
+      cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; filterCategory.appendChild(o); });
+      filterSupplier.innerHTML = '<option value="">Todos</option>';
+      sups.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; filterSupplier.appendChild(o); });
+      // default render
+      applyFilters();
+    })();
+
+    // ----------------------------
+    // Comparison logic
+    // - allowed up to 4 products (selected by multi-select)
+    // - compute totals in interval: qty, revenue, cost, profit, margin
+    // - create combined chart: bar = qty, line = profit
+    // - compute variation vs previous interval (same length)
+    // ----------------------------
+    function aggregateProductStats(productId, from, to){
+      const p = products.find(x=>x.id===productId);
+      if (!p) return null;
+      const history = salesHistory[productId] || {};
+      let qty = 0;
+      let revenue = 0;
+      let costTotal = 0;
+      Object.keys(history).forEach(date => {
+        if ((!from || date >= from) && (!to || date <= to)){
+          const q = history[date];
+          qty += q;
+          revenue += q * p.price;
+          costTotal += q * p.cost;
+        }
+      });
+      const profit = revenue - costTotal;
+      const margin = revenue ? (profit / revenue) * 100 : 0;
+      return { id: p.id, name: p.name, qty, revenue, costTotal, profit, margin, price: p.price };
+    }
+
+    function compareProducts(productIds, from, to){
+      // compute current stats
+      const stats = productIds.map(pid => aggregateProductStats(pid, from, to)).filter(Boolean);
+      // compute variation vs previous same-length interval
+      const days = Math.max(1, daysBetween(from, to) || 1);
+      const prevEnd = new Date(from); prevEnd.setDate(new Date(from).getDate()-1);
+      const prevStart = new Date(prevEnd); prevStart.setDate(prevEnd.getDate()-days+1);
+      const prevStartStr = prevStart.toISOString().slice(0,10);
+      const prevEndStr = prevEnd.toISOString().slice(0,10);
+      const prevStats = productIds.map(pid => aggregateProductStats(pid, prevStartStr, prevEndStr)).filter(Boolean);
+
+      // merge and compute variation %
+      const rows = stats.map(s => {
+        const prev = prevStats.find(p=>p.id===s.id) || { qty:0, revenue:0, profit:0 };
+        const qtyVar = prev.qty ? ((s.qty - prev.qty)/prev.qty)*100 : (s.qty?100:0);
+        const revVar = prev.revenue ? ((s.revenue - prev.revenue)/prev.revenue)*100 : (s.revenue?100:0);
+        return { ...s, prevQty: prev.qty, prevRevenue: prev.revenue, qtyVar, revVar };
+      });
+      return rows;
+    }
+
+    function renderCompareResults(rows, criterion){
+      // chart data: labels, qtys, profits
+      const labels = rows.map(r => r.name);
+      const qtys = rows.map(r => r.qty);
+      const profits = rows.map(r => r.profit.toFixed(2));
+
+      compareMeta.textContent = `${rows.length} produtos — critério: ${criterion}`;
+
+      // table
+      compareTableBody.innerHTML = '';
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 border-b">${r.name}</td>
+          <td class="p-2 border-b text-right">${r.qty}</td>
+          <td class="p-2 border-b text-right">${money(r.revenue)}</td>
+          <td class="p-2 border-b text-right">${money(r.profit)}</td>
+          <td class="p-2 border-b text-right">${r.margin.toFixed(1)}%</td>
+          <td class="p-2 border-b text-right">${r.qtyVar.toFixed(1)}%</td>
+        `;
+        compareTableBody.appendChild(tr);
+      });
+
+      // chart: bar (qty) + line (profit)
+      const ctx = document.getElementById('compareChart').getContext('2d');
+      if (compareChart) compareChart.destroy();
+      compareChart = new Chart(ctx, {
+        data: {
+          labels,
+          datasets: [
+            { type: 'bar', label: 'Unidades vendidas', data: qtys, backgroundColor: '#3b82f6', yAxisID: 'y1' },
+            { type: 'line', label: 'Lucro (R$)', data: rows.map(r=> +r.profit.toFixed(2)), borderColor:'#10b981', backgroundColor:'#10b981', tension:0.3, fill:false, yAxisID:'y2' }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            y1: { type:'linear', position:'left', beginAtZero:true, title:{ display:true, text:'Unidades' } },
+            y2: { type:'linear', position:'right', beginAtZero:true, grid: { drawOnChartArea:false }, title:{ display:true, text:'Lucro (R$)' } }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(ctx){
+                  const ds = ctx.dataset;
+                  if (ds.type === 'bar') return `${ds.label}: ${ctx.parsed.y} unidades`;
+                  return `${ds.label}: R$ ${ctx.parsed.y.toFixed(2)}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Compare button event
+    btnCompare.addEventListener('click', () => {
+      const selected = Array.from(selectProducts.selectedOptions).map(o=>o.value).slice(0,4);
+      if (selected.length < 1) return alert('Selecione pelo menos 1 produto (máx 4).');
+      const from = compFrom.value;
+      const to = compTo.value;
+      if (!from || !to) return alert('Selecione intervalo válido.');
+      const rows = compareProducts(selected, from, to);
+      renderCompareResults(rows, compareBy.value);
+    });
+
+    btnClearCompare.addEventListener('click', () => {
+      selectProducts.selectedIndex = -1;
+      if (compareChart) compareChart.destroy();
+      compareTableBody.innerHTML = '';
+      compareMeta.textContent = '—';
+    });
+
+    // ----------------------------
+    // Product modal
+    // ----------------------------
+    function openProductModal(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('modalTitle').textContent = p.name;
+      document.getElementById('modalSKU').textContent = 'SKU: ' + p.id;
+      document.getElementById('modalImage').src = p.image;
+      document.getElementById('modalDesc').textContent = `Categoria: ${p.category}`;
+      document.getElementById('modalSupplier').textContent = p.supplier;
+      document.getElementById('modalLocation').textContent = p.location;
+      document.getElementById('modalQty').textContent = p.qty;
+      document.getElementById('modalExpiry').textContent = p.expiry;
+      document.getElementById('modalCost').textContent = money(p.cost);
+      document.getElementById('modalPrice').textContent = money(p.price);
+      document.getElementById('modalProduct').classList.remove('hidden');
+
+      document.getElementById('modalReorderBtn').onclick = () => {
+        const q = prompt('Quantidade a repor:', '10');
+        const qn = Number(q) || 0;
+        if (qn>0) { p.qty += qn; applyFilters(); closeModal('modalProduct'); alert('Reposto (simulação).'); }
+      };
+    }
+
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+    // bind modal close on Esc
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal('modalProduct'); });
+
+    // ----------------------------
+    // Export CSV & Print
+    // ----------------------------
+    exportCSVbtn.addEventListener('click', () => {
+      // export currently shown products (apply current filters)
+      const cat = filterCategory.value, sup = filterSupplier.value, q = (globalSearch.value || '').trim().toLowerCase();
+      const from = dateFrom.value, to = dateTo.value;
+      const filtered = products.filter(p => {
+        if (cat && p.category !== cat) return false;
+        if (sup && p.supplier !== sup) return false;
+        if (q && !(p.id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q))) return false;
+        return true;
+      });
+      const rows = [['SKU','Nome','Categoria','Fornecedor','Local','Qtd','Min','Custo','Preço','ValorStock','Validade','Status']];
+      filtered.forEach(p => {
+        rows.push([p.id,p.name,p.category,p.supplier,p.location,p.qty,p.min,p.cost,p.price,(p.cost*p.qty),p.expiry,computeStatus(p).label]);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `produtos_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    printBtn.addEventListener('click', () => window.print());
+
+    // ----------------------------
+    // User menu
+    // ----------------------------
+    document.getElementById('userBtn').addEventListener('click', ()=> document.getElementById('userMenu').classList.toggle('hidden'));
+    window.addEventListener('click', (e)=> {
+      if (!document.getElementById('userBtn').contains(e.target) && !document.getElementById('userMenu').contains(e.target)){
+        document.getElementById('userMenu').classList.add('hidden');
+      }
+    });
+
+    // ----------------------------
+    // Init
+    // ----------------------------
+    (function init(){
+      // set initial dates last 30 days
+      const end = new Date(); const start = new Date(); start.setDate(end.getDate()-29);
+      dateFrom.value = start.toISOString().slice(0,10);
+      dateTo.value = end.toISOString().slice(0,10);
+      compFrom.value = start.toISOString().slice(0,10);
+      compTo.value = end.toISOString().slice(0,10);
+
+      // populate selects
+      populateSelectors();
+
+      // initial render
+      applyFilters();
+    })();
+
+  </script>
+
+</body>
+</html>

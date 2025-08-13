@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Farmácia — Produtos (Gestor)</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    .status-badge { font-size: 0.72rem; padding: .15rem .5rem; border-radius: .375rem; }
+    .thead-sticky th { position: sticky; top: 0; background: white; z-index: 5; }
+    .table-scroll { max-height: 56vh; overflow:auto; }
+    /* small responsive tweaks */
+    @media (max-width: 768px) {
+      .hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-800 font-sans">
+
+  <!-- TOPBAR -->
+  <header class="bg-white border-b sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-clinic-medical text-2xl text-blue-600"></i>
+        <div>
+          <div class="text-lg font-semibold">ERP Farmácia</div>
+          <div class="text-xs text-gray-500">Gestor de Produtos</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center bg-gray-50 border rounded px-2 py-1 gap-2">
+          <i class="fas fa-search text-gray-400"></i>
+          <input id="quickSearch" class="bg-transparent focus:outline-none text-sm" placeholder="Pesquisar por nome, SKU, fornecedor..." />
+        </div>
+
+        <button id="btnExportCSV" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm"><i class="fas fa-file-csv mr-2"></i>Exportar</button>
+        <button id="btnPrint" class="bg-white border px-3 py-1 rounded hover:bg-gray-50 text-sm"><i class="fas fa-print mr-2"></i>Imprimir</button>
+
+        <div class="relative">
+          <button id="userBtn" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-50">
+            <i class="fas fa-user-circle text-2xl text-gray-600"></i>
+            <div class="hidden sm:block text-sm text-left">
+              <div class="font-medium">Manuel Fulama</div>
+              <div class="text-xs text-gray-500">Admin</div>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </button>
+          <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fas fa-user mr-2"></i> Perfil</a>
+            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100"><i class="fas fa-cog mr-2"></i> Definições</a>
+            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 py-6 flex gap-6">
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-white border rounded shadow p-4 h-[calc(100vh-140px)] sticky top-20 overflow-auto">
+      <div class="text-xs text-gray-400 uppercase font-semibold mb-3">Estoque</div>
+      <ul class="space-y-2 text-sm">
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-boxes text-gray-500 w-5"></i> Visão geral</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-box-open text-gray-500 w-5"></i> Produtos</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-tags text-gray-500 w-5"></i> Categorias</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-truck text-gray-500 w-5"></i> Fornecedores</li>
+        <li class="flex items-center gap-2 p-2 rounded hover:bg-blue-50 cursor-pointer"><i class="fas fa-clipboard-list text-gray-500 w-5"></i> Movimentos</li>
+      </ul>
+
+      <div class="mt-6">
+        <div class="text-xs text-gray-400 uppercase font-semibold mb-2">Ações rápidas</div>
+        <div class="grid gap-2">
+          <button id="btnAddProduct" class="bg-blue-600 text-white px-3 py-2 rounded text-sm flex items-center gap-2 justify-center"><i class="fas fa-plus"></i> Novo Produto</button>
+          <button id="btnBulkReorder" class="bg-yellow-50 text-yellow-700 px-3 py-2 rounded text-sm flex items-center gap-2 justify-center"><i class="fas fa-shopping-cart"></i> Reordenar Seleção</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1">
+
+      <!-- KPI Cards -->
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Total SKUs</div>
+          <div id="kTotalSKUs" class="text-2xl font-bold">0</div>
+          <div class="text-xs text-gray-400">Produtos únicos</div>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Quantidade Total</div>
+          <div id="kTotalQty" class="text-2xl font-bold">0</div>
+          <div class="text-xs text-gray-400">Unidades em stock</div>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Valor em Stock</div>
+          <div id="kValue" class="text-2xl font-bold text-green-600">R$ 0,00</div>
+          <div class="text-xs text-gray-400">Custo total (estimado)</div>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <div class="text-xs text-gray-500">Itens Críticos</div>
+          <div id="kCritical" class="text-2xl font-bold text-red-600">0</div>
+          <div class="text-xs text-gray-400">Baixo estoque / vencidos</div>
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="bg-white p-4 rounded shadow mb-4">
+        <div class="flex flex-col lg:flex-row gap-3">
+          <div class="flex gap-2 flex-1">
+            <input id="filterName" placeholder="Pesquisar por nome ou SKU..." class="flex-1 border rounded px-3 py-2"/>
+            <select id="filterCategory" class="border rounded px-3 py-2">
+              <option value="">Todas as categorias</option>
+            </select>
+            <select id="filterSupplier" class="border rounded px-3 py-2">
+              <option value="">Todos fornecedores</option>
+            </select>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            <select id="filterStatus" class="border rounded px-3 py-2">
+              <option value="">Todos status</option>
+              <option value="ok">OK</option>
+              <option value="low">Baixo</option>
+              <option value="expiring">Vencendo</option>
+              <option value="expired">Vencido</option>
+            </select>
+            <select id="sortBy" class="border rounded px-3 py-2">
+              <option value="name">Ordenar: Nome</option>
+              <option value="qty_desc">Qtd ↓</option>
+              <option value="qty_asc">Qtd ↑</option>
+              <option value="expiry">Validade</option>
+              <option value="value_desc">Valor ↓</option>
+            </select>
+            <button id="btnClearFilters" class="bg-gray-50 border px-3 py-2 rounded">Limpar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Table + bulk actions -->
+      <section class="bg-white p-4 rounded shadow">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <input id="selectAll" type="checkbox" />
+            <span class="text-sm text-gray-600">Selecionar página</span>
+            <button id="btnBulkExport" class="ml-4 px-3 py-1 border rounded text-sm">Exportar seleção</button>
+            <button id="btnBulkDelete" class="px-3 py-1 border rounded text-sm text-red-600">Excluir seleção</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-sm text-gray-500">Exibir</label>
+            <select id="perPage" class="border rounded px-2 py-1">
+              <option>10</option><option>25</option><option>50</option>
+            </select>
+            <div class="text-sm text-gray-500 ml-3">Página <span id="currentPage">1</span></div>
+            <button id="prevPage" class="px-3 py-1 border rounded">‹</button>
+            <button id="nextPage" class="px-3 py-1 border rounded">›</button>
+          </div>
+        </div>
+
+        <div class="table-scroll border rounded">
+          <table class="min-w-full">
+            <thead class="thead-sticky bg-gray-50">
+              <tr>
+                <th class="p-2 border-b text-left w-10"> </th>
+                <th class="p-2 border-b text-left">SKU</th>
+                <th class="p-2 border-b text-left">Produto</th>
+                <th class="p-2 border-b text-left hide-sm">Categoria</th>
+                <th class="p-2 border-b text-left">Fornecedor</th>
+                <th class="p-2 border-b text-center">Local</th>
+                <th class="p-2 border-b text-center">Qtd</th>
+                <th class="p-2 border-b text-center hide-sm">Min</th>
+                <th class="p-2 border-b text-right hide-sm">Custo</th>
+                <th class="p-2 border-b text-right">Preço</th>
+                <th class="p-2 border-b text-right">Valor</th>
+                <th class="p-2 border-b text-left">Validade</th>
+                <th class="p-2 border-b text-left hide-sm">Últ. Mov.</th>
+                <th class="p-2 border-b text-left">Status</th>
+                <th class="p-2 border-b text-right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="productsTable" class="text-sm"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white text-gray-500 p-4 text-center">
+    &copy; 2025 ERP Farmácia — Todos os direitos reservados
+  </footer>
+
+  <!-- MODALS -->
+  <!-- Edit / View Product -->
+  <div id="modalEdit" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-3xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="modalTitle" class="font-semibold">Editar Produto</h3>
+        <button onclick="closeModal('modalEdit')" class="text-gray-500">✖</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-gray-600">SKU</label>
+          <input id="editSKU" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-600">Nome</label>
+          <input id="editName" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Categoria</label>
+          <input id="editCategory" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Fornecedor</label>
+          <input id="editSupplier" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Localização</label>
+          <input id="editLocation" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Quantidade</label>
+          <input id="editQty" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Min</label>
+          <input id="editMin" type="number" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Custo</label>
+          <input id="editCost" type="number" step="0.01" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Preço</label>
+          <input id="editPrice" type="number" step="0.01" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Validade</label>
+          <input id="editExpiry" type="date" class="w-full border rounded px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="text-xs text-gray-600">Imagem (URL)</label>
+          <input id="editImage" class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="closeModal('modalEdit')" class="px-3 py-1 border rounded">Cancelar</button>
+        <button id="saveEdit" class="px-3 py-1 bg-blue-600 text-white rounded">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movement log modal -->
+  <div id="modalLog" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold">Histórico de Movimentos</h3>
+        <button onclick="closeModal('modalLog')" class="text-gray-500">✖</button>
+      </div>
+      <div id="logContent" class="text-sm max-h-64 overflow-auto"></div>
+      <div class="mt-4 flex justify-end">
+        <button onclick="closeModal('modalLog')" class="px-3 py-1 border rounded">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reorder modal -->
+  <div id="modalReorder" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-full max-w-md p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold">Repor Estoque</h3>
+        <button onclick="closeModal('modalReorder')" class="text-gray-500">✖</button>
+      </div>
+      <div>
+        <div class="text-sm text-gray-600 mb-2" id="reorderProductLabel">—</div>
+        <label class="text-xs text-gray-600">Quantidade</label>
+        <input id="reorderQty" type="number" class="w-full border rounded px-3 py-2 mb-3" value="10" />
+        <label class="text-xs text-gray-600">Fornecedor</label>
+        <input id="reorderSupplierInput" class="w-full border rounded px-3 py-2 mb-3" />
+      </div>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModal('modalReorder')" class="px-3 py-1 border rounded">Cancelar</button>
+        <button id="confirmReorder" class="px-3 py-1 bg-green-600 text-white rounded">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Utilities
+    const money = v => 'R$ ' + Number(v).toFixed(2).replace('.',',');
+
+    // Dummy master data
+    const categories = ['Analgésico','Antibiótico','Vitaminas','Higiene','Dermocosmético'];
+    const suppliers = ['MedFarma','BioPharma','SaudeDistrib','LabX'];
+    const locations = ['Prat. A1','Prat. B2','Armazém','Frio'];
+
+    // Generate dummy products
+    const products = [];
+    const today = new Date();
+    for(let i=1;i<=60;i++){
+      const sku = 'SKU' + (1000 + i);
+      const baseNames = ['Dipirona','Paracetamol','Ibuprofeno','Amoxicilina','Vitamina C','Omeprazol','Losartana','Cetirizina'];
+      const name = baseNames[i % baseNames.length] + ' ' + ((i%3===0)? '500mg': '250mg');
+      const category = categories[i % categories.length];
+      const supplier = suppliers[i % suppliers.length];
+      const location = locations[i % locations.length];
+      const min = Math.floor(Math.random()*20) + 5;
+      const qty = Math.floor(Math.random()*120);
+      const cost = +( (Math.random()*15)+1 ).toFixed(2);
+      const price = +(cost * (1 + (Math.random()*0.8))).toFixed(2);
+      const expiry = new Date(); expiry.setDate(today.getDate() + (Math.floor(Math.random()*800)-200)); // some expired, some far
+      const lastMov = new Date(); lastMov.setDate(today.getDate() - Math.floor(Math.random()*90));
+      products.push({
+        id: sku, name, category, supplier, location,
+        qty, min, cost, price,
+        expiry: expiry.toISOString().slice(0,10),
+        lastMov: lastMov.toISOString().slice(0,10),
+        image: `https://via.placeholder.com/80?text=${encodeURIComponent(name.split(' ')[0])}`
+      });
+    }
+
+    // movement logs (dummy)
+    const movementLogs = {};
+    products.forEach(p=>{
+      movementLogs[p.id] = [];
+      const moves = Math.floor(Math.random()*6)+2;
+      for(let m=0;m<moves;m++){
+        movementLogs[p.id].push({
+          date: new Date(Date.now() - Math.floor(Math.random()*180)*24*3600*1000).toISOString().slice(0,10),
+          qty: (Math.random()>0.5? +Math.floor(Math.random()*40): -Math.floor(Math.random()*10)),
+          type: (Math.random()>0.5? 'Entrada':'Saída'),
+          note: (Math.random()>0.5? 'Compra fornecedor':'Venda/Retorno')
+        });
+      }
+    });
+
+    // DOM elements
+    const productsTable = document.getElementById('productsTable');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSupplier = document.getElementById('filterSupplier');
+    const filterName = document.getElementById('filterName');
+    const filterStatus = document.getElementById('filterStatus');
+    const sortBy = document.getElementById('sortBy');
+    const perPageSel = document.getElementById('perPage');
+    const currentPageLabel = document.getElementById('currentPage');
+    const kTotalSKUs = document.getElementById('kTotalSKUs');
+    const kTotalQty = document.getElementById('kTotalQty');
+    const kValue = document.getElementById('kValue');
+    const kCritical = document.getElementById('kCritical');
+    const quickSearch = document.getElementById('quickSearch');
+
+    // pagination & selection
+    let currentPage = 1;
+    let perPage = parseInt(perPageSel.value) || 10;
+    let selected = new Set();
+    let filtered = [...products];
+
+    // populate filters
+    function populateFilters(){
+      categories.forEach(c=>{
+        const o = document.createElement('option'); o.value = c; o.textContent = c; filterCategory.appendChild(o);
+      });
+      suppliers.forEach(s=>{
+        const o = document.createElement('option'); o.value = s; o.textContent = s; filterSupplier.appendChild(o);
+      });
+    }
+    populateFilters();
+
+    function computeStatus(p){
+      const qty = p.qty;
+      const min = p.min;
+      const exp = new Date(p.expiry);
+      const days = Math.ceil((exp - new Date())/(24*3600*1000));
+      if (days < 0) return { key:'expired', label:'Vencido', color:'red' };
+      if (days <= 30) return { key:'expiring', label:`Vencendo (${days}d)`, color:'orange' };
+      if (qty <= min) return { key:'low', label:'Baixo', color:'red' };
+      return { key:'ok', label:'OK', color:'green' };
+    }
+
+    function renderKPIs(list){
+      kTotalSKUs.textContent = list.length;
+      kTotalQty.textContent = list.reduce((s,p)=>s+p.qty,0);
+      const val = list.reduce((s,p)=> s + p.qty * p.cost, 0);
+      kValue.textContent = money(val);
+      const critical = list.filter(p => ['low','expiring','expired'].includes(computeStatus(p).key)).length;
+      kCritical.textContent = critical;
+    }
+
+    function renderTable(){
+      // apply filters
+      const name = (filterName.value || '').trim().toLowerCase();
+      const cat = filterCategory.value;
+      const sup = filterSupplier.value;
+      const status = filterStatus.value;
+      const g = (quickSearch.value || '').trim().toLowerCase();
+
+      filtered = products.filter(p => {
+        if (name && ! (p.name.toLowerCase().includes(name) || p.id.toLowerCase().includes(name))) return false;
+        if (cat && p.category !== cat) return false;
+        if (sup && p.supplier !== sup) return false;
+        if (g && ! (p.name.toLowerCase().includes(g) || p.id.toLowerCase().includes(g) || p.supplier.toLowerCase().includes(g))) return false;
+        if (status){
+          if (computeStatus(p).key !== status) return false;
+        }
+        return true;
+      });
+
+      // sorting
+      const s = sortBy.value;
+      if (s === 'qty_desc') filtered.sort((a,b)=> b.qty - a.qty);
+      else if (s === 'qty_asc') filtered.sort((a,b)=> a.qty - b.qty);
+      else if (s === 'expiry') filtered.sort((a,b)=> new Date(a.expiry) - new Date(b.expiry));
+      else if (s === 'value_desc') filtered.sort((a,b)=> b.cost*b.qty - a.cost*a.qty);
+      else filtered.sort((a,b)=> a.name.localeCompare(b.name));
+
+      // pagination
+      perPage = parseInt(perPageSel.value) || 10;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage-1)*perPage;
+      const pageItems = filtered.slice(start, start+perPage);
+
+      productsTable.innerHTML = '';
+      pageItems.forEach(p=>{
+        const st = computeStatus(p);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 border-b"><input class="rowSelect" data-id="${p.id}" type="checkbox" ${selected.has(p.id)?'checked':''} /></td>
+          <td class="p-2 border-b font-medium">${p.id}</td>
+          <td class="p-2 border-b">
+            <div class="flex items-center gap-3">
+              <img src="${p.image}" alt="${p.name}" class="w-10 h-10 object-cover rounded" />
+              <div>
+                <div class="font-medium">${p.name}</div>
+                <div class="text-xs text-gray-500">${p.category}</div>
+                <div class="text-xs text-gray-400">SKU interno</div>
+              </div>
+            </div>
+          </td>
+          <td class="p-2 border-b hide-sm">${p.category}</td>
+          <td class="p-2 border-b">${p.supplier}</td>
+          <td class="p-2 border-b text-center">${p.location}</td>
+          <td class="p-2 border-b text-center ${st.key==='low' || st.key==='expired' ? 'text-red-600 font-semibold':''}">${p.qty}</td>
+          <td class="p-2 border-b text-center hide-sm">${p.min}</td>
+          <td class="p-2 border-b text-right hide-sm">${money(p.cost)}</td>
+          <td class="p-2 border-b text-right">${money(p.price)}</td>
+          <td class="p-2 border-b text-right">${money(p.cost * p.qty)}</td>
+          <td class="p-2 border-b">${p.expiry}</td>
+          <td class="p-2 border-b hide-sm">${p.lastMov}</td>
+          <td class="p-2 border-b">
+            <span class="status-badge ${st.color === 'green' ? 'bg-green-100 text-green-700' : st.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700'}">${st.label}</span>
+          </td>
+          <td class="p-2 border-b text-right">
+            <div class="flex justify-end gap-2">
+              <button class="text-indigo-600 btn-edit" data-id="${p.id}" title="Editar"><i class="fas fa-edit"></i></button>
+              <button class="text-gray-600 btn-log" data-id="${p.id}" title="Movimentos"><i class="fas fa-history"></i></button>
+              <button class="text-green-600 btn-reorder" data-id="${p.id}" title="Repor"><i class="fas fa-shopping-cart"></i></button>
+            </div>
+          </td>
+        `;
+        productsTable.appendChild(tr);
+      });
+
+      // bind row selects
+      document.querySelectorAll('.rowSelect').forEach(cb=>{
+        cb.addEventListener('change', (e)=>{
+          const id = e.target.dataset.id;
+          if (e.target.checked) selected.add(id); else selected.delete(id);
+        });
+      });
+
+      // bind actions
+      document.querySelectorAll('.btn-edit').forEach(b=> b.addEventListener('click', ()=> openEdit(b.dataset.id)));
+      document.querySelectorAll('.btn-log').forEach(b=> b.addEventListener('click', ()=> openLog(b.dataset.id)));
+      document.querySelectorAll('.btn-reorder').forEach(b=> b.addEventListener('click', ()=> openReorder(b.dataset.id)));
+
+      // selectAll
+      document.getElementById('selectAll').checked = pageItems.every(p=> selected.has(p.id));
+      currentPageLabel.textContent = currentPage;
+
+      // update KPIs
+      renderKPIs(filtered);
+    }
+
+    // initial render
+    renderTable();
+
+    // pagination controls
+    document.getElementById('prevPage').addEventListener('click', ()=> { if (currentPage>1) { currentPage--; renderTable(); } });
+    document.getElementById('nextPage').addEventListener('click', ()=> { const total = Math.max(1, Math.ceil(filtered.length / perPage)); if (currentPage < total){ currentPage++; renderTable(); } });
+    perPageSel.addEventListener('change', ()=> { currentPage = 1; renderTable(); });
+
+    // filters
+    [filterCategory, filterSupplier, filterName, filterStatus, sortBy, quickSearch].forEach(el=>{
+      el.addEventListener('input', ()=> { currentPage=1; renderTable(); });
+      el.addEventListener('change', ()=> { currentPage=1; renderTable(); });
+    });
+    document.getElementById('btnClearFilters').addEventListener('click', ()=> {
+      filterCategory.value=''; filterSupplier.value=''; filterStatus.value=''; filterName.value=''; quickSearch.value=''; sortBy.value='name';
+      currentPage =1; renderTable();
+    });
+
+    // selectAll handler
+    document.getElementById('selectAll').addEventListener('change', (e)=>{
+      const checked = e.target.checked;
+      const start = (currentPage-1)*perPage; const pageItems = filtered.slice(start, start+perPage);
+      pageItems.forEach(p => { if (checked) selected.add(p.id); else selected.delete(p.id); });
+      renderTable();
+    });
+
+    // bulk actions
+    document.getElementById('btnBulkExport').addEventListener('click', ()=> {
+      const list = products.filter(p=> selected.has(p.id));
+      if (list.length === 0) return alert('Nenhum item selecionado');
+      exportCSV(list);
+    });
+    document.getElementById('btnBulkDelete').addEventListener('click', ()=> {
+      if (!confirm('Excluir itens selecionados? (simulação)')) return;
+      for (const id of [...selected]) {
+        const idx = products.findIndex(p=>p.id===id);
+        if (idx>=0) products.splice(idx,1);
+        selected.delete(id);
+      }
+      renderTable();
+    });
+
+    // Export CSV util
+    function exportCSV(list){
+      if (!list || list.length===0) return alert('Nenhum dado para exportar.');
+      const rows = [['SKU','Nome','Categoria','Fornecedor','Local','Qtd','Min','Custo','Preço','Valor','Validade','ÚltMov','Status']];
+      list.forEach(p=>{
+        rows.push([p.id,p.name,p.category,p.supplier,p.location,p.qty,p.min,p.cost,p.price,(p.cost*p.qty),p.expiry,p.lastMov,computeStatus(p).label]);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `produtos_export_${Date.now()}.csv`; a.click(); URL.revokeObjectURL(url);
+    }
+    document.getElementById('btnExportCSV').addEventListener('click', ()=> exportCSV(filtered));
+
+    // Print
+    document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
+
+    // Add product quick
+    document.getElementById('btnAddProduct').addEventListener('click', ()=> {
+      const sku = 'SKU' + (1000 + products.length + 1);
+      const newP = { id: sku, name: 'Novo Produto ' + (products.length+1), category: categories[0], supplier: suppliers[0], location: locations[0], qty:0, min:5, cost:5.00, price:8.00, expiry: new Date(Date.now()+365*24*3600*1000).toISOString().slice(0,10), lastMov: new Date().toISOString().slice(0,10), image:`https://via.placeholder.com/80?text=Novo` };
+      products.unshift(newP);
+      renderTable();
+      openEdit(newP.id);
+    });
+
+    // Modal functions: openEdit, openLog, openReorder
+    function openEdit(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return alert('Produto não encontrado');
+      document.getElementById('modalTitle').textContent = 'Editar — ' + p.id;
+      document.getElementById('editSKU').value = p.id;
+      document.getElementById('editName').value = p.name;
+      document.getElementById('editCategory').value = p.category;
+      document.getElementById('editSupplier').value = p.supplier;
+      document.getElementById('editLocation').value = p.location;
+      document.getElementById('editQty').value = p.qty;
+      document.getElementById('editMin').value = p.min;
+      document.getElementById('editCost').value = p.cost;
+      document.getElementById('editPrice').value = p.price;
+      document.getElementById('editExpiry').value = p.expiry;
+      document.getElementById('editImage').value = p.image;
+      document.getElementById('modalEdit').classList.remove('hidden');
+
+      document.getElementById('saveEdit').onclick = () => {
+        p.id = document.getElementById('editSKU').value || p.id;
+        p.name = document.getElementById('editName').value || p.name;
+        p.category = document.getElementById('editCategory').value || p.category;
+        p.supplier = document.getElementById('editSupplier').value || p.supplier;
+        p.location = document.getElementById('editLocation').value || p.location;
+        p.qty = Number(document.getElementById('editQty').value) || 0;
+        p.min = Number(document.getElementById('editMin').value) || 0;
+        p.cost = Number(document.getElementById('editCost').value) || p.cost;
+        p.price = Number(document.getElementById('editPrice').value) || p.price;
+        p.expiry = document.getElementById('editExpiry').value || p.expiry;
+        p.image = document.getElementById('editImage').value || p.image;
+        p.lastMov = new Date().toISOString().slice(0,10);
+        closeModal('modalEdit');
+        renderTable();
+      };
+    }
+
+    function openLog(id){
+      const logs = movementLogs[id] || [];
+      const c = document.getElementById('logContent');
+      c.innerHTML = '';
+      if (logs.length===0) c.innerHTML = '<p class="text-sm text-gray-500">Sem movimentos registrados.</p>';
+      else {
+        const table = document.createElement('table'); table.className = 'w-full text-sm';
+        table.innerHTML = `<thead class="text-xs text-gray-500"><tr><th>Data</th><th>Tipo</th><th>Qty</th><th>Nota</th></tr></thead>`;
+        const tbody = document.createElement('tbody');
+        logs.sort((a,b)=> new Date(b.date)-new Date(a.date)).forEach(l=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="py-1">${l.date}</td><td class="py-1">${l.type}</td><td class="py-1">${l.qty}</td><td class="py-1 text-gray-600">${l.note}</td>`;
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        c.appendChild(table);
+      }
+      document.getElementById('modalLog').classList.remove('hidden');
+    }
+
+    function openReorder(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('reorderProductLabel').textContent = `${p.id} — ${p.name}`;
+      document.getElementById('reorderQty').value = Math.max(1, p.min*2);
+      document.getElementById('reorderSupplierInput').value = p.supplier;
+      document.getElementById('modalReorder').classList.remove('hidden');
+
+      document.getElementById('confirmReorder').onclick = () => {
+        const qty = Number(document.getElementById('reorderQty').value) || 0;
+        p.qty += qty;
+        movementLogs[p.id] = movementLogs[p.id] || [];
+        movementLogs[p.id].push({ date: new Date().toISOString().slice(0,10), qty: qty, type: 'Entrada', note: 'Reordenação manual' });
+        closeModal('modalReorder');
+        renderTable();
+      };
+    }
+
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+    // close user menu toggle
+    document.getElementById('userBtn').addEventListener('click', ()=> document.getElementById('userMenu').classList.toggle('hidden'));
+    window.addEventListener('click', (e)=> {
+      if (!document.getElementById('userBtn').contains(e.target) && !document.getElementById('userMenu').contains(e.target)){
+        document.getElementById('userMenu').classList.add('hidden');
+      }
+    });
+
+    // simple UX helpers
+    document.addEventListener('keydown', (e)=> { if (e.key === 'Escape') { ['modalEdit','modalLog','modalReorder'].forEach(closeModal); } });
+
+    // finalize: initial render already called
+    renderKPIs(products);
+    renderTable();
+
+  </script>
+</body>
+</html>
+

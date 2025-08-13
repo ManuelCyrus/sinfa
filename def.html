@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ERP Farmácia — Configurações da Empresa</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    /* small style touches */
+    .sidebar-scroll { max-height: calc(100vh - 6rem); overflow:auto; }
+    .logo-preview { width: 84px; height: 84px; object-fit: contain; border-radius: 8px; background: #f8fafc; border: 1px solid #e6edf3; padding: 6px; }
+    .kbd { background:#f1f5f9; border-radius:4px; padding:4px 6px; font-size:12px; border:1px solid #e2e8f0; }
+    .form-section-title { display:flex; gap:.6rem; align-items:center; font-weight:600; color:#0f172a; }
+    .muted { color:#64748b; }
+    @media (max-width: 1024px) {
+      .sidebar-scroll { max-height: unset; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-inter antialiased">
+
+  <!-- TOPBAR -->
+  <header class="bg-white shadow sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="p-2 rounded-md hover:bg-slate-100 lg:hidden" title="Abrir menu">
+          <i class="fas fa-bars text-slate-700"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3">
+            <img src="https://via.placeholder.com/40x40?text=F" alt="logo" class="w-10 h-10 rounded-md object-cover" />
+            <div>
+              <div class="text-lg font-semibold">ERP Farmácia</div>
+              <div class="text-xs muted">Administração · Faturamento · Estoque</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 w-full max-w-2xl">
+        <div class="flex items-center bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 w-full">
+          <i class="fas fa-search text-slate-400 mr-2"></i>
+          <input id="topSearch" class="bg-transparent w-full text-sm focus:outline-none" placeholder="Pesquisar produtos, clientes, faturas, SKU..." />
+          <button id="advSearch" class="text-xs text-slate-500 ml-2 kbd">Pesquisa avançada</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button title="Notificações" class="relative p-2 rounded hover:bg-slate-100">
+          <i class="fas fa-bell text-slate-600"></i>
+          <span id="notifBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-xs rounded-full px-1.5">2</span>
+        </button>
+
+        <div class="relative" id="userContainer">
+          <button id="userBtn" class="flex items-center gap-2 px-3 py-1 rounded hover:bg-slate-100">
+            <img src="https://via.placeholder.com/36" class="w-9 h-9 rounded-full object-cover" alt="user" />
+            <div class="text-left hidden sm:block">
+              <div class="text-sm font-medium">Manuel Fulama</div>
+              <div class="text-xs muted">Administrador</div>
+            </div>
+            <i class="fas fa-chevron-down text-slate-400"></i>
+          </button>
+
+          <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow border">
+            <a href="#" class="block px-4 py-2 hover:bg-slate-50 text-sm"><i class="fas fa-user mr-2"></i>Perfil</a>
+            <a href="#" class="block px-4 py-2 hover:bg-slate-50 text-sm"><i class="fas fa-cog mr-2"></i>Configurações</a>
+            <div class="border-t"></div>
+            <a href="#" class="block px-4 py-2 hover:bg-slate-50 text-sm text-rose-600"><i class="fas fa-sign-out-alt mr-2"></i>Sair</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="lg:col-span-3 bg-gradient-to-b from-white to-slate-50 rounded-lg shadow sidebar-scroll p-4 hidden lg:block">
+      <div class="flex items-center justify-between mb-4">
+        <div class="text-sm font-semibold">Menu</div>
+        <button id="collapseSidebar" title="Minimizar" class="p-1 rounded hover:bg-slate-100"><i class="fas fa-angle-left text-slate-500"></i></button>
+      </div>
+
+      <nav class="space-y-1 text-sm">
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100 active:bg-slate-100" href="#">
+          <i class="fas fa-chart-line w-5 text-indigo-600"></i> Dashboard
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100" href="#">
+          <i class="fas fa-boxes w-5 text-indigo-600"></i> Produtos
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100" href="#">
+          <i class="fas fa-file-invoice-dollar w-5 text-indigo-600"></i> Faturamento
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100" href="#">
+          <i class="fas fa-users w-5 text-indigo-600"></i> Clientes
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100" href="#">
+          <i class="fas fa-truck w-5 text-indigo-600"></i> Fornecedores
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded hover:bg-slate-100" href="#">
+          <i class="fas fa-receipt w-5 text-indigo-600"></i> Relatórios
+        </a>
+        <a class="flex items-center gap-3 p-2 rounded bg-indigo-50 text-indigo-700" href="#">
+          <i class="fas fa-cogs w-5"></i> Configurações
+        </a>
+      </nav>
+
+      <div class="mt-6 border-t pt-4">
+        <div class="text-xs text-slate-500 mb-2 uppercase">Rápido</div>
+        <div class="flex flex-col gap-2">
+          <button class="flex items-center gap-2 text-sm bg-green-600 text-white px-3 py-2 rounded"><i class="fas fa-plus"></i> Novo produto</button>
+          <button class="flex items-center gap-2 text-sm bg-yellow-50 text-yellow-700 px-3 py-2 rounded"><i class="fas fa-shopping-cart"></i> Repor estoque</button>
+          <button class="flex items-center gap-2 text-sm border px-3 py-2 rounded" id="exportBtn"><i class="fas fa-file-export"></i> Exportar dados</button>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t pt-4">
+        <div class="text-xs text-slate-500 mb-2 uppercase">Status</div>
+        <div class="text-sm text-slate-600">Versão: <span class="font-medium">v1.0.0</span></div>
+        <div class="text-sm text-slate-600">Último backup: <span class="font-medium">2025-08-01</span></div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="lg:col-span-9">
+
+      <!-- Header do conteudo -->
+      <div class="bg-white rounded-lg shadow p-4 mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold">Configurações da Empresa</h1>
+          <p class="text-sm muted">Defina os dados da sua empresa, parâmetros fiscais, preferências do sistema e integrações.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btnImport" class="px-3 py-2 border rounded bg-white hover:bg-slate-50 text-sm"><i class="fas fa-file-import mr-2"></i>Importar JSON</button>
+          <button id="btnExport" class="px-3 py-2 border rounded bg-white hover:bg-slate-50 text-sm"><i class="fas fa-file-export mr-2"></i>Exportar JSON</button>
+          <button id="btnSave" class="px-4 py-2 bg-indigo-600 text-white rounded shadow"><i class="fas fa-save mr-2"></i>Salvar</button>
+        </div>
+      </div>
+
+      <!-- GRID: Sections -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Column A: Principal -->
+        <div class="space-y-6 lg:col-span-2">
+
+          <!-- Card: Dados da Empresa -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4">
+              <i class="fas fa-building text-indigo-600"></i>
+              <span>Dados da Empresa</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <div class="md:col-span-2 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input id="companyName" type="text" placeholder="Nome da Empresa / Farmácia" class="border rounded px-3 py-2" />
+                  <input id="companyTax" type="text" placeholder="NIF / CNPJ" class="border rounded px-3 py-2" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input id="companyPhone" type="text" placeholder="Telefone" class="border rounded px-3 py-2" />
+                  <input id="companyEmail" type="email" placeholder="E-mail" class="border rounded px-3 py-2" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input id="companyWebsite" type="text" placeholder="Website" class="border rounded px-3 py-2" />
+                  <input id="companyLicence" type="text" placeholder="Licença Sanitária / Registo" class="border rounded px-3 py-2" />
+                </div>
+
+                <textarea id="companyAddress" rows="2" placeholder="Endereço completo" class="border rounded px-3 py-2 w-full"></textarea>
+
+                <div class="flex gap-3 items-center">
+                  <div>
+                    <label class="text-xs muted">Logotipo</label>
+                    <div class="mt-2 flex items-center gap-3">
+                      <img id="logoPreview" src="https://via.placeholder.com/84x84?text=Logo" alt="logo" class="logo-preview" />
+                      <div class="flex flex-col gap-2">
+                        <input id="logoInput" type="file" accept="image/*" class="text-sm" />
+                        <button id="removeLogo" class="text-xs text-rose-600 hidden">Remover</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ml-auto text-right text-sm muted">
+                    <div>Setor: <select id="companySector" class="border rounded px-2 py-1 text-sm">
+                      <option>Farmácia</option><option>Distribuidor</option><option>Atacado</option>
+                    </select></div>
+                    <div class="mt-2">Responsável: <input id="companyOwner" class="border rounded px-2 py-1 text-sm" placeholder="Nome do responsável" /></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-l pl-4 md:pl-6">
+                <div class="text-sm font-medium">Informações legais</div>
+                <div class="text-xs muted mt-2">Número de registo, prazo de emissão de faturas e dados fiscais especiais.</div>
+
+                <div class="mt-4 text-sm">
+                  <label class="text-xs muted">Regime tributário</label>
+                  <select id="taxRegime" class="w-full border rounded px-2 py-2 text-sm mt-1">
+                    <option>Simples Nacional</option>
+                    <option>Lucro Presumido</option>
+                    <option>Lucro Real</option>
+                    <option>Isento</option>
+                  </select>
+                </div>
+
+                <div class="mt-3 text-sm">
+                  <label class="text-xs muted">Observações fiscais</label>
+                  <textarea id="taxNotes" rows="4" class="border rounded px-2 py-2 text-sm mt-1" placeholder="Observações legais / notas fiscais"></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Card: Faturamento e NFs -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-file-invoice-dollar text-indigo-600"></i><span>Faturamento e NF</span></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-xs muted">Prefixo de Fatura</label>
+                <input id="invoicePrefix" class="border rounded px-3 py-2" placeholder="EX: FAT" />
+              </div>
+              <div>
+                <label class="text-xs muted">Série</label>
+                <input id="invoiceSeries" class="border rounded px-3 py-2" placeholder="0001" />
+              </div>
+              <div>
+                <label class="text-xs muted">Número Inicial</label>
+                <input id="invoiceStart" type="number" class="border rounded px-3 py-2" placeholder="1000" />
+              </div>
+
+              <div>
+                <label class="text-xs muted">Tipo de Documento</label>
+                <select id="invoiceType" class="border rounded px-3 py-2">
+                  <option>Factura</option><option>Recibo</option><option>Nota de Crédito</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-xs muted">Validação Fiscal (ex: API/Token)</label>
+                <input id="fiscalToken" class="border rounded px-3 py-2" placeholder="Token/API key (opcional)" />
+              </div>
+
+              <div>
+                <label class="text-xs muted">Assinatura digital</label>
+                <select id="digitalSign" class="border rounded px-3 py-2">
+                  <option>Não</option><option>Sim (PKCS#12)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <label class="text-xs muted">Mensagem padrão em faturas (ex: Informação fiscal)</label>
+              <textarea id="invoiceNote" rows="2" class="border rounded px-3 py-2 text-sm mt-1" placeholder="Obrigado pela preferência. Guarde este documento."></textarea>
+            </div>
+          </section>
+
+          <!-- Card: Contas Bancárias -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-university text-indigo-600"></i><span>Contas Bancárias</span></div>
+
+            <div id="bankList" class="space-y-3">
+              <!-- bank rows inserted by JS -->
+            </div>
+
+            <div class="mt-3 flex gap-2">
+              <button id="addBank" class="px-3 py-2 bg-green-600 text-white rounded text-sm"><i class="fas fa-plus mr-2"></i>Adicionar conta</button>
+              <button id="clearBanks" class="px-3 py-2 border rounded text-sm">Limpar</button>
+            </div>
+          </section>
+
+          <!-- Card: Integrações -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-plug text-indigo-600"></i><span>Integrações</span></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-xs muted">Gateway de pagamento</label>
+                <select id="gateway" class="border rounded px-3 py-2">
+                  <option>Não configurado</option>
+                  <option>Stripe (teste)</option>
+                  <option>PayPal</option>
+                  <option>TPA local</option>
+                </select>
+                <input id="gatewayKey" class="border rounded px-3 py-2 text-sm" placeholder="API Key / Token" />
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-xs muted">Integração ERP/Contabilidade</label>
+                <select id="acctInt" class="border rounded px-3 py-2">
+                  <option>Não</option>
+                  <option>ContaAzul</option>
+                  <option>QuickBooks</option>
+                </select>
+                <input id="acctUrl" class="border rounded px-3 py-2 text-sm" placeholder="Endpoint / Webhook" />
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Column B: Preferências & Segurança -->
+        <aside class="space-y-6">
+
+          <!-- Card: Moeda e Idioma -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-globe text-indigo-600"></i><span>Moeda & Idioma</span></div>
+
+            <div class="space-y-3 text-sm">
+              <label class="text-xs muted">Moeda padrão</label>
+              <select id="currency" class="border rounded px-3 py-2">
+                <option value="AOA">Kwanza (AOA)</option>
+                <option value="BRL">Real (BRL)</option>
+                <option value="USD">Dólar (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+              </select>
+
+              <label class="text-xs muted">Idioma</label>
+              <select id="locale" class="border rounded px-3 py-2">
+                <option value="pt-BR">Português (PT-BR)</option>
+                <option value="en-US">Inglês (EN)</option>
+                <option value="es-ES">Espanhol (ES)</option>
+              </select>
+
+              <label class="text-xs muted">Timezone</label>
+              <select id="timezone" class="border rounded px-3 py-2">
+                <option>America/Sao_Paulo</option>
+                <option>Africa/Luanda</option>
+                <option>UTC</option>
+              </select>
+
+              <label class="text-xs muted">Formato de data</label>
+              <select id="dateFormat" class="border rounded px-3 py-2">
+                <option>DD/MM/YYYY</option>
+                <option>YYYY-MM-DD</option>
+                <option>MM/DD/YYYY</option>
+              </select>
+
+              <label class="text-xs muted">Separador decimal</label>
+              <select id="numFormat" class="border rounded px-3 py-2">
+                <option>Vírgula (1.234,56)</option>
+                <option>Ponto (1,234.56)</option>
+              </select>
+            </div>
+          </section>
+
+          <!-- Card: Vendas e POS -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-cash-register text-indigo-600"></i><span>Vendas / PDV</span></div>
+            <div class="space-y-3 text-sm">
+              <label class="flex items-center gap-2">
+                <input id="autoReceipt" type="checkbox" checked class="form-checkbox" />
+                Imprimir recibo automaticamente
+              </label>
+              <label class="flex items-center gap-2">
+                <input id="allowNegative" type="checkbox" class="form-checkbox" />
+                Permitir venda com stock negativo
+              </label>
+              <label class="text-xs muted">Tipo de código de barras</label>
+              <select id="barcodeType" class="border rounded px-3 py-2">
+                <option>EAN13</option><option>CODE128</option><option>QR</option>
+              </select>
+
+              <label class="text-xs muted">SKU padrão (ex: Sku + número)</label>
+              <input id="skuPattern" class="border rounded px-3 py-2" placeholder="SKU-{YYYY}{NNNN}" />
+            </div>
+          </section>
+
+          <!-- Card: Notificações -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-bell text-indigo-600"></i><span>Notificações</span></div>
+            <div class="text-sm space-y-2">
+              <label class="flex items-center gap-2"><input id="notifyEmail" type="checkbox" checked class="form-checkbox" /> E-mail</label>
+              <label class="flex items-center gap-2"><input id="notifySMS" type="checkbox" class="form-checkbox" /> SMS</label>
+              <label class="flex items-center gap-2"><input id="notifyInApp" type="checkbox" checked class="form-checkbox" /> In-App</label>
+              <label class="text-xs muted">Alertas</label>
+              <div class="flex gap-2">
+                <input id="alertStockThreshold" type="number" class="border rounded px-2 py-1 w-28" placeholder="min Qtd" /> <div class="muted text-xs mt-2">unidades</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Card: Backup & Segurança -->
+          <section class="bg-white p-5 rounded shadow">
+            <div class="form-section-title mb-4"><i class="fas fa-database text-indigo-600"></i><span>Backup & Segurança</span></div>
+            <div class="space-y-3 text-sm">
+              <div class="grid grid-cols-1 gap-2">
+                <label class="text-xs muted">Backup automático</label>
+                <select id="autoBackup" class="border rounded px-3 py-2">
+                  <option>Desativado</option><option>Diário</option><option>Semanal</option><option>Mensal</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-xs muted">Armazenamento</label>
+                <select id="backupStorage" class="border rounded px-3 py-2">
+                  <option>Local</option><option>FTP</option><option>Dropbox</option><option>AWS S3</option>
+                </select>
+              </div>
+
+              <div class="mt-2 flex gap-2">
+                <button id="doBackup" class="px-3 py-2 border rounded text-sm">Executar Backup</button>
+                <button id="restoreBackup" class="px-3 py-2 border rounded text-sm">Restaurar</button>
+              </div>
+            </div>
+          </section>
+
+        </aside>
+
+      </div>
+
+      <!-- FOOTER ACTIONS -->
+      <div class="mt-6 flex items-center justify-between">
+        <div class="text-sm muted">Dica: Você pode exportar configurações e importar em outra instalação do ERP.</div>
+        <div class="flex gap-3">
+          <button id="btnReset" class="px-4 py-2 border rounded text-sm">Recarregar</button>
+          <button id="btnSaveBottom" class="px-4 py-2 bg-indigo-600 text-white rounded text-sm"><i class="fas fa-save mr-2"></i>Salvar configurações</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    /* ===========================
+       Interações e persistência (localStorage demo)
+       =========================== */
+
+    // UI refs
+    const userBtn = document.getElementById('userBtn');
+    const userMenu = document.getElementById('userMenu');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const collapseSidebar = document.getElementById('collapseSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    // settings fields
+    const fields = {
+      companyName: document.getElementById('companyName'),
+      companyTax: document.getElementById('companyTax'),
+      companyPhone: document.getElementById('companyPhone'),
+      companyEmail: document.getElementById('companyEmail'),
+      companyWebsite: document.getElementById('companyWebsite'),
+      companyLicence: document.getElementById('companyLicence'),
+      companyAddress: document.getElementById('companyAddress'),
+      companySector: document.getElementById('companySector'),
+      companyOwner: document.getElementById('companyOwner'),
+      taxRegime: document.getElementById('taxRegime'),
+      taxNotes: document.getElementById('taxNotes'),
+      invoicePrefix: document.getElementById('invoicePrefix'),
+      invoiceSeries: document.getElementById('invoiceSeries'),
+      invoiceStart: document.getElementById('invoiceStart'),
+      invoiceType: document.getElementById('invoiceType'),
+      fiscalToken: document.getElementById('fiscalToken'),
+      digitalSign: document.getElementById('digitalSign'),
+      invoiceNote: document.getElementById('invoiceNote'),
+
+      currency: document.getElementById('currency'),
+      locale: document.getElementById('locale'),
+      timezone: document.getElementById('timezone'),
+      dateFormat: document.getElementById('dateFormat'),
+      numFormat: document.getElementById('numFormat'),
+
+      autoReceipt: document.getElementById('autoReceipt'),
+      allowNegative: document.getElementById('allowNegative'),
+      barcodeType: document.getElementById('barcodeType'),
+      skuPattern: document.getElementById('skuPattern'),
+
+      notifyEmail: document.getElementById('notifyEmail'),
+      notifySMS: document.getElementById('notifySMS'),
+      notifyInApp: document.getElementById('notifyInApp'),
+      alertStockThreshold: document.getElementById('alertStockThreshold'),
+
+      autoBackup: document.getElementById('autoBackup'),
+      backupStorage: document.getElementById('backupStorage'),
+
+      logoInput: document.getElementById('logoInput'),
+      logoPreview: document.getElementById('logoPreview'),
+      removeLogo: document.getElementById('removeLogo'),
+    };
+
+    // banks list container
+    const bankList = document.getElementById('bankList');
+
+    // load / save settings from localStorage
+    const STORAGE_KEY = 'erp-company-settings-v1';
+
+    function saveSettings() {
+      const data = {};
+      Object.keys(fields).forEach(k => {
+        const el = fields[k];
+        if (!el) return;
+        if (el.type === 'checkbox') data[k] = el.checked;
+        else if (el.type === 'file') { /* skip file */ }
+        else data[k] = el.value || '';
+      });
+
+      // banks
+      const banks = Array.from(bankList.querySelectorAll('.bank-row')).map(row => ({
+        name: row.querySelector('[name="bankName"]').value,
+        acc: row.querySelector('[name="bankAcc"]').value,
+        branch: row.querySelector('[name="bankBranch"]').value,
+        iban: row.querySelector('[name="bankIBAN"]').value,
+      }));
+      data.banks = banks;
+
+      // logo (dataURL)
+      data.logo = fields.logoPreview.src || '';
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showToast('Configurações salvas localmente');
+      return data;
+    }
+
+    function loadSettings() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        Object.keys(fields).forEach(k => {
+          const el = fields[k];
+          if (!el) return;
+          if (el.type === 'checkbox') el.checked = !!data[k];
+          else if (el.type === 'file') {}
+          else el.value = data[k] || '';
+        });
+
+        // logo
+        if (data.logo) { fields.logoPreview.src = data.logo; fields.removeLogo.classList.remove('hidden'); }
+
+        // banks
+        bankList.innerHTML = '';
+        (data.banks || []).forEach(b => addBankRow(b));
+
+        showToast('Configurações carregadas');
+      } catch (e) {
+        console.error(e);
+        showToast('Erro ao carregar configurações', true);
+      }
+    }
+
+    // toast
+    function showToast(msg, isErr=false) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.className = `fixed right-4 bottom-8 px-4 py-2 rounded shadow ${isErr? 'bg-rose-500 text-white':'bg-slate-800 text-white'}`;
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 3000);
+    }
+
+    // logo upload
+    fields.logoInput.addEventListener('change', (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        fields.logoPreview.src = reader.result;
+        fields.removeLogo.classList.remove('hidden');
+      };
+      reader.readAsDataURL(f);
+    });
+    fields.removeLogo.addEventListener('click', () => {
+      fields.logoPreview.src = 'https://via.placeholder.com/84x84?text=Logo';
+      fields.removeLogo.classList.add('hidden');
+      fields.logoInput.value = '';
+    });
+
+    // banks UI
+    function addBankRow(data = {}) {
+      const wrap = document.createElement('div');
+      wrap.className = 'bank-row grid grid-cols-1 md:grid-cols-4 gap-2 items-center border rounded p-2';
+      wrap.innerHTML = `
+        <input name="bankName" placeholder="Banco" class="border rounded px-2 py-1" value="${data.name || ''}" />
+        <input name="bankAcc" placeholder="Conta" class="border rounded px-2 py-1" value="${data.acc || ''}" />
+        <input name="bankBranch" placeholder="Agência" class="border rounded px-2 py-1" value="${data.branch || ''}" />
+        <div class="flex gap-2">
+          <input name="bankIBAN" placeholder="IBAN / SWIFT" class="border rounded px-2 py-1" value="${data.iban || ''}" />
+          <button class="btnDel text-rose-600 px-3 py-1 rounded" title="Remover"><i class="fas fa-trash"></i></button>
+        </div>
+      `;
+      bankList.appendChild(wrap);
+      wrap.querySelector('.btnDel').addEventListener('click', ()=>wrap.remove());
+    }
+    document.getElementById('addBank').addEventListener('click', ()=>addBankRow());
+    document.getElementById('clearBanks').addEventListener('click', ()=>bankList.innerHTML = '');
+
+    // export/import JSON
+    document.getElementById('btnExport').addEventListener('click', () => {
+      const data = saveSettings();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `erp-settings-${Date.now()}.json`; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btnImport').addEventListener('click', () => {
+      const input = document.createElement('input'); input.type = 'file'; input.accept = 'application/json';
+      input.onchange = e => {
+        const f = e.target.files[0]; if(!f) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(reader.result);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            loadSettings();
+            showToast('Importado com sucesso');
+          } catch (err) { showToast('Arquivo inválido', true); }
+        };
+        reader.readAsText(f);
+      };
+      input.click();
+    });
+
+    // event saves
+    document.getElementById('btnSave').addEventListener('click', saveSettings);
+    document.getElementById('btnSaveBottom').addEventListener('click', saveSettings);
+    document.getElementById('btnReset').addEventListener('click', () => {
+      if (confirm('Recarregar configurações salvas?')) loadSettings();
+    });
+
+    // small helpers: sidebar toggle
+    sidebarToggle && sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+    });
+    collapseSidebar && collapseSidebar.addEventListener('click', () => {
+      sidebar.classList.toggle('lg:!w-20');
+      // small visual toggle can be expanded
+    });
+
+    // user menu toggle
+    userBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userMenu.classList.toggle('hidden');
+    });
+    window.addEventListener('click', (e) => {
+      if (!userBtn.contains(e.target)) userMenu.classList.add('hidden');
+    });
+
+    // Export button demo
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      showToast('Exportação iniciada (simulação)');
+    });
+
+    // quick save on change (debounced)
+    let saveTimer = null;
+    document.querySelectorAll('input,select,textarea').forEach(el => {
+      el.addEventListener('input', () => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => { saveSettings(); }, 1200);
+      });
+    });
+
+    // load on start
+    loadSettings();
+
+    // demo: explanation of SKU (optional help)
+    // If you want to show a help modal about SKU, implement here
+
+    // Accessibility: keyboard shortcut Ctrl+S to save
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveSettings();
+      }
+    });
+
+    // quick backup buttons (placeholder)
+    document.getElementById('doBackup').addEventListener('click', () => {
+      showToast('Backup iniciado (simulação)');
+    });
+    document.getElementById('restoreBackup').addEventListener('click', () => {
+      if (confirm('Restaurar backup local (simulação)?')) showToast('Restauração executada (simulação)');
+    });
+
+    // import/export top shortcuts
+    document.getElementById('btnImport').addEventListener('click', ()=>{ /* handled above */ });
+    document.getElementById('btnExport').addEventListener('click', ()=>{ /* handled above */ });
+
+    // initial sample bank row
+    addBankRow({ name: 'Banco de Angola', acc: '12345-6', branch: '0001', iban: '' });
+
+  </script>
+</body>
+</html>
